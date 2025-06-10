@@ -5,11 +5,9 @@
 ** Filename.cpp
 */
 
-#include <ZapGUI/Error.hpp>
 #include <ZapGUI/Filename.hpp>
 
 #include <filesystem>
-#include <fstream>
 
 std::string zap::Filename::getPath(const std::string &name)
 {
@@ -48,4 +46,14 @@ std::vector<std::string> zap::Filename::getLines(const std::string &path)
     }
 
     return lines;
+}
+
+std::string zap::Filename::extract(const std::string &path)
+{
+    const size_t last_slash = path.find_last_of("/\\");
+
+    if (last_slash == std::string::npos) {
+        return path;
+    }
+    return path.substr(last_slash + 1);
 }
