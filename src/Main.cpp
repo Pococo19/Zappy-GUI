@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ZapGUI/Drawable/Model.hpp"
+#include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Raylib.hpp>
 
 int main(void)
