@@ -10,8 +10,17 @@
 #include <ZapGUI/Raylib.hpp>
 
 #include <string>
+#include <vector>
 
 namespace zap::abstract {
+
+struct MaterialInfo {
+        std::string name;
+        std::string diffuse_map; //<< map_Kd
+        std::string normal_map;  //<< map_Bump
+        std::string alpha_map;   //<< map_d
+        std::string specular_map;//<< map_Ks
+};
 
 class ModelBase
 {
@@ -36,5 +45,8 @@ class ModelBase
         Color _tint = WHITE;
 
         void _load_textures(const std::string &obj_file, const std::string &texture_directory);
+
+    private:
+        void _bind_textures(const std::vector<MaterialInfo> &materials);
 };
 }// namespace zap::abstract
