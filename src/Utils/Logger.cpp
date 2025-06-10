@@ -16,9 +16,9 @@
  */
 void zap::logger::error(const exception::Error &e)
 {
-    std::cerr << RED_BOLD << "╔════════════════════════════════╗" << RESET << std::endl
-              << RED_BOLD << "║       ⚠ ERROR OCCURRED ⚠       ║" << RESET << std::endl
-              << RED_BOLD << "╚════════════════════════════════╝" << RESET << std::endl
-              << YELLOW << "⮞ Raised by: " << RESET << e.where() << std::endl
-              << YELLOW << "⮞ Reason:    " << RESET << e.what() << std::endl;
+    std::cerr << ZAP_RED_BOLD << "╔════════════════════════════════╗" << ZAP_RESET << std::endl
+              << ZAP_RED_BOLD << "║       ⚠ ERROR OCCURRED ⚠       ║" << ZAP_RESET << std::endl
+              << ZAP_RED_BOLD << "╚════════════════════════════════╝" << ZAP_RESET << std::endl
+              << ZAP_YELLOW << "⮞ Raised by: " << ZAP_RESET << e.where() << std::endl
+              << ZAP_YELLOW << "⮞ Reason:    " << ZAP_RESET << e.what() << std::endl;
 }
