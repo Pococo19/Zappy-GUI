@@ -38,7 +38,7 @@ zap::ZapModel::~ZapModel()
 
 void zap::ZapModel::draw() const
 {
-    DrawModel(_model, _position, _scale, _tint);
+    DrawModelEx(_model, _position, _rotationAxis, _rotationAngle, _scale, _tint);
 }
 
 /**

@@ -9,6 +9,11 @@
 
 namespace zappy {
 
+struct Planet {
+        Vector3 _position;
+        f32 _radius;
+};
+
 class Application final : public zap::abstract::GameEngine
 {
     public:

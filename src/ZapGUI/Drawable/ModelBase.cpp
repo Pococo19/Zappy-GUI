@@ -27,12 +27,17 @@ Vector3 zap::abstract::ModelBase::getPosition() const
     return _position;
 }
 
-void zap::abstract::ModelBase::setScale(f32 scale)
+void zap::abstract::ModelBase::setScale(const float scale)
+{
+    _scale = {scale, scale, scale};
+}
+
+void zap::abstract::ModelBase::setScale(const Vector3 &scale)
 {
     _scale = scale;
 }
 
-f32 zap::abstract::ModelBase::getScale() const
+Vector3 zap::abstract::ModelBase::getScale() const
 {
     return _scale;
 }
@@ -45,6 +50,12 @@ void zap::abstract::ModelBase::setTint(const Color &tint)
 Color zap::abstract::ModelBase::getTint() const
 {
     return _tint;
+}
+
+void zap::abstract::ModelBase::setRotationAxis(const Vector3 &axis, const f32 angle)
+{
+    _rotationAxis = axis;
+    _rotationAngle = angle;
 }
 
 /**
