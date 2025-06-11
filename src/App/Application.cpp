@@ -5,8 +5,6 @@
 ** Application.cpp
 */
 
-#include <random>
-#include <thread>
 #define ZAP_USE_RAYLIB_MATH
 #include <ZapGUI/Raylib.hpp>
 
@@ -14,6 +12,8 @@
 #include <ZapGUI/Logger.hpp>
 
 #include <App/Application.hpp>
+
+#include <random>
 
 /**
 * public
