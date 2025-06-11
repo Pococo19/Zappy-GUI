@@ -226,6 +226,10 @@ void zap::abstract::ModelBase::_load_textures(const std::string &obj_file, const
 * private
 */
 
+#include <unordered_map>
+
+static std::unordered_map<std::string, Texture2D> _texture_cache;
+
 void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &materials)
 {
     for (size_t i = 0; i < materials.size() && i < (size_t) _model.materialCount; ++i) {
@@ -237,9 +241,20 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
         if (!material.diffuse_map.empty()) {
             logger::task_start("loading diffuse texture: ", material.diffuse_map);
 
+            if (_texture_cache.find(material.diffuse_map) != _texture_cache.end()) {
+                /** @brief reuse cached texture */
+                _model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = _texture_cache[material.diffuse_map];
+                logger::task_done("reusing cached diffuse texture for material ", material.name);
+                continue;
+            }
+
             Texture2D diffuse_texture = LoadTexture(material.diffuse_map.c_str());
 
             if (diffuse_texture.id != 0) {
+
+                /** @brief cache the texture for future use */
+                _texture_cache[material.diffuse_map] = diffuse_texture;
+
                 /** @brief apply the texture to the material */
                 _model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = diffuse_texture;
 
@@ -258,9 +273,20 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
         if (!material.normal_map.empty()) {
             logger::task_start("loading normal texture: ", material.normal_map);
 
+            if (_texture_cache.find(material.normal_map) != _texture_cache.end()) {
+                /** @brief reuse cached texture */
+                _model.materials[i].maps[MATERIAL_MAP_NORMAL].texture = _texture_cache[material.normal_map];
+                logger::task_done("reusing cached normal texture for material ", material.name);
+                continue;
+            }
+
             Texture2D normal_texture = LoadTexture(material.normal_map.c_str());
 
             if (normal_texture.id != 0) {
+
+                /** @brief cache the texture for future use */
+                _texture_cache[material.normal_map] = normal_texture;
+
                 _model.materials[i].maps[MATERIAL_MAP_NORMAL].texture = normal_texture;
                 logger::task_done("successfully loaded normal texture for material ", material.name);
             } else {
