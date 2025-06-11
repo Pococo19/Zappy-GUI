@@ -45,7 +45,7 @@ void zap::ZapModel::draw() const
 * static
 */
 
-std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &heightmap_path, const std::string &texture_path)
+std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &heightmap_path, const std::string &texture_path, const f32 max_height)
 {
     if (!Filename::exists(heightmap_path)) {
         throw exception::Error("zap::ZapModel::from_heightmap", "File not found: ", heightmap_path);
@@ -54,10 +54,10 @@ std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &
         throw exception::Error("zap::ZapModel::from_heightmap", "Texture file not found: ", texture_path);
     }
 
-    Image heightmap = LoadImage(heightmap_path.c_str());
+    Image heightmap = LoadImage(Filename::getPath(heightmap_path).c_str());
     const Vector3 size = {
         static_cast<f32>(heightmap.width),//<< X = width of image
-        30.0f,                            //<< Y = max height (e.g. 30.0f)
+        max_height,                       //<< Y = max height (e.g. 30.0f)
         static_cast<f32>(heightmap.height)//<< Z = depth of image
     };
     Mesh mesh = GenMeshHeightmap(heightmap, size);
@@ -67,7 +67,7 @@ std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &
     Model model = LoadModelFromMesh(mesh);
 
     if (!texture_path.empty()) {
-        Texture2D texture = LoadTexture(texture_path.c_str());
+        Texture2D texture = LoadTexture(Filename::getPath(texture_path).c_str());
 
         SetTextureWrap(texture, TEXTURE_WRAP_REPEAT);
         SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);

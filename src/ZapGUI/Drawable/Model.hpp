@@ -22,7 +22,7 @@ class ZapModel final : public abstract::ModelBase, public abstract::Drawable
 
         ~ZapModel();
 
-        static std::unique_ptr<ZapModel> from_heightmap(const std::string &obj_path, const std::string &texture_path = "");
+        static std::unique_ptr<ZapModel> from_heightmap(const std::string &obj_path, const std::string &texture_path = "", const f32 max_height = 30.0f);
 
         void draw() const override;
 };

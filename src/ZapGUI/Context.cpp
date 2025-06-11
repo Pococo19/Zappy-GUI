@@ -18,9 +18,10 @@
 
 static void _create_window_context(const Vector2u &size, const std::string &title, const u32 max_framerate)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(static_cast<i32>(size._x), static_cast<i32>(size._y), title.c_str());
     SetTargetFPS(static_cast<i32>(max_framerate));
-    HideCursor();
+    DisableCursor();
 }
 
 static void __yield(zap::abstract::GameEngine *engine)
