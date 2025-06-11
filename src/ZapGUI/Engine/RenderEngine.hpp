@@ -18,6 +18,7 @@ class RenderEngine
         virtual void startup() = 0;
         virtual void render() = 0;
         virtual void shutdown() = 0;
+        virtual void update() = 0;
 };
 
 }// namespace zap::abstract

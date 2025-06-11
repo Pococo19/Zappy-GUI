@@ -7,6 +7,7 @@
 
 #include <ZapGUI/Engine/GameEngine.hpp>
 #include <ZapGUI/Logger.hpp>
+#include "GameEngine.hpp"
 
 /**
 * public
@@ -25,6 +26,12 @@ void zap::abstract::GameEngine::render()
         scene.second->render();
     }
 }
+
+void zap::abstract::GameEngine::update()
+{
+    
+}
+
 
 /**
 * protected

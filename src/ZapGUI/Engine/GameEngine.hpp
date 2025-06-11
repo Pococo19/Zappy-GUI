@@ -23,6 +23,7 @@ class GameEngine : public abstract::RenderEngine
 
         void startup() override;
         void render() override;
+        void update() override;
         void shutdown() override;
 
     protected:
