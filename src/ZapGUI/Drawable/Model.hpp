@@ -18,11 +18,11 @@ class ZapModel final : public abstract::ModelBase, public abstract::Drawable
 {
     public:
         explicit ZapModel(const std::string &obj_path, const std::string &texture_directory = "");
-        explicit ZapModel(const Model &model);
+        explicit ZapModel(const Model &model, const Texture &texture = {});
 
         ~ZapModel();
 
-        static std::unique_ptr<ZapModel> from_heightmap(const std::string &obj_path);
+        static std::unique_ptr<ZapModel> from_heightmap(const std::string &obj_path, const std::string &texture_path = "");
 
         void draw() const override;
 };

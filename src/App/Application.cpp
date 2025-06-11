@@ -21,7 +21,12 @@ static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string 
 
 static std::unique_ptr<zap::abstract::Drawable> _create_heightmap(const std::string &obj_path)
 {
-    return zap::ZapModel::from_heightmap(obj_path);
+    auto kurwa_mesh = zap::ZapModel::from_heightmap(obj_path);
+    const auto mac_pos = kurwa_mesh->getPosition();
+
+    kurwa_mesh->setPosition({mac_pos.x, mac_pos.y - 30, mac_pos.z});
+    kurwa_mesh->setTint(LIME);
+    return kurwa_mesh;
 }
 
 void zappy::Application::init()
