@@ -24,7 +24,6 @@ void zap::render::Loop::run() const noexcept
     zap::Client client("10.74.253.72", 8000);
     if (!client.connectToServer()) {
         std::cerr << "Failed to connect to server." << std::endl;
-        return;
     }
 
     while (!WindowShouldClose()) {
