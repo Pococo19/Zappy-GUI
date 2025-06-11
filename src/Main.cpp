@@ -5,6 +5,7 @@
 ** Main.cpp
 */
 
+#include "ZapGUI/Render/Camera.hpp"
 #include <memory>
 
 #include <ZapGUI/Drawable/Model.hpp>
@@ -15,23 +16,17 @@ int main(void)
     InitWindow(1920, 1080, "Zappy");
 
     std::unique_ptr<zap::abstract::Drawable> model = std::make_unique<zap::ZapModel>("assets/models/CommonTree_1.obj", "assets/textures/");
-
-    Camera camera;
-    camera.position = {4.0f, 4.0f, 4.0f};
-    camera.target = {0.0f, 0.0f, 0.0f};
-    camera.up = {0.0f, 1.0f, 0.0f};
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    zap::ZapCamera camera;
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
-        UpdateCamera(&camera, CAMERA_FREE);
+        camera.update();
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        BeginMode3D(camera);
+        BeginMode3D(camera.get());
         model->draw();
         DrawGrid(10, 1.0f);
         EndMode3D();
