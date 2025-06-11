@@ -32,7 +32,7 @@ class ModelBase
         Vector3 getPosition() const;
 
         void setScale(const Vector3 &scale);
-        void setScale(const float scale);
+        void setScale(const f32 scale);
         Vector3 getScale() const;
 
         void setTint(const Color &tint);
@@ -49,7 +49,7 @@ class ModelBase
         Color _tint = WHITE;
 
         Vector3 _rotationAxis = {0.0f, 1.0f, 0.0f};
-        float _rotationAngle = 0.0f;
+        f32 _rotationAngle = 0.0f;
 
         void _load_textures(const std::string &obj_file, const std::string &texture_directory);
 

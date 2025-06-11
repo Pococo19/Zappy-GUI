@@ -23,8 +23,8 @@ static std::unique_ptr<zap::ZapModel> _create_model(const std::string &obj_path,
 
 static std::unique_ptr<zap::abstract::Drawable> _create_planet(const zappy::Planet &planet)
 {
-    Mesh sphere = GenMeshSphere(planet._radius, 32, 32);
-    Model model = LoadModelFromMesh(sphere);
+    const Mesh sphere = GenMeshSphere(planet._radius, 32, 32);
+    const Model model = LoadModelFromMesh(sphere);
     auto p_model = std::make_unique<zap::ZapModel>(model);
 
     p_model->setPosition(planet._position);
@@ -42,20 +42,21 @@ static i32 _get_random_between(const i32 min, const i32 max)
     return dis(gen);
 }
 
-static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const Vector3 &planetCenter, f32 radius,
-    int count)
+static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, int count)
 {
     for (int i = 0; i < count; ++i) {
-        const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    // 0 to π
-        const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));// 0 to 2π
+        const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    //<< 0 to π
+        const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));//<< 0 to 2π
+        const f32 radius = planet._radius;
+        const Vector3 center = planet._position;
 
         Vector3 pos = {radius * std::sinf(theta) * std::cosf(phi), radius * std::cosf(theta), radius * std::sinf(theta) * std::sinf(phi)};
 
-        pos = Vector3Add(planetCenter, pos);
+        pos = Vector3Add(center, pos);
 
-        auto obj = _create_model(obj_paths[u32(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
+        auto obj = _create_model(obj_paths[static_cast<u32>(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
 
-        const Vector3 normal = Vector3Normalize(Vector3Subtract(pos, planetCenter));
+        const Vector3 normal = Vector3Normalize(Vector3Subtract(pos, center));
         constexpr Vector3 up = {0, 1, 0};
         const Vector3 axis = Vector3CrossProduct(up, normal);
         const f32 angle = acosf(Vector3DotProduct(up, normal));
@@ -73,23 +74,28 @@ static const std::vector<std::string> _tree_models = {
     "assets/models/CommonTree_1.obj",
     "assets/models/CommonTree_2.obj",
     "assets/models/CommonTree_3.obj",
-    "assets/models/CommonTree_4.obj",
+    "assets/models/CommonTree_4.obj"
 };
 
 static const std::vector<std::string> _flower_models = {
     "assets/models/Flower_3_Group.obj",
-    "assets/models/Flower_4_Group.obj"
+    "assets/models/Flower_4_Group.obj",
+    "assets/models/Mushroom_Common.obj",
+    "assets/models/Mushroom_Laetiporus.obj",
+    "assets/models/Grass_Common_Tall.obj",
+    "assets/models/Grass_Common_Short.obj",
+    "assets/models/Grass_Wispy_Tall.obj",
+    "assets/models/Grass_Wispy_Short.obj"
 };
-// clang-format on
 
 std::unique_ptr<zap::render::Scene> zappy::_create_main_scene()
 {
     auto scene = std::make_unique<zap::render::Scene>();
-    zappy::Planet planet = {{25, 0, 25}, 15.0f};
+    constexpr zappy::Planet planet = {{25, 0, 25}, 15.0f};
 
     scene->add(_create_planet(planet));
-    _add_models_around_planet(scene, _tree_models, planet._position, planet._radius + 0.5f, 10);
-    _add_models_around_planet(scene, _flower_models, planet._position, planet._radius + 0.5f, 20);
+    _add_models_around_planet(scene, _tree_models, planet, 10);
+    _add_models_around_planet(scene, _flower_models, planet, 50);
     scene->add(std::make_unique<zap::ZapCamera>());
     return scene;
 }
