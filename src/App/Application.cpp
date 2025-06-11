@@ -38,7 +38,7 @@ static std::unique_ptr<zap::abstract::Drawable> _create_planet(const zappy::Plan
     return p_model;
 }
 
-static i32 _get_random_between(i32 min, i32 max)
+static i32 _get_random_between(const i32 min, const i32 max)
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -48,7 +48,8 @@ static i32 _get_random_between(i32 min, i32 max)
     return dis(gen);
 }
 
-static void _add_trees_around_planet(std::unique_ptr<zap::render::Scene> &scene, const Vector3 &planetCenter, f32 radius, int count)
+static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const Vector3 &planetCenter, f32 radius,
+    int count)
 {
     for (int i = 0; i < count; ++i) {
         const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    // 0 to π
@@ -58,7 +59,7 @@ static void _add_trees_around_planet(std::unique_ptr<zap::render::Scene> &scene,
 
         pos = Vector3Add(planetCenter, pos);
 
-        auto tree = _create_model("assets/models/CommonTree_" + std::to_string(_get_random_between(1, 4)) + ".obj", pos);
+        auto obj = _create_model(obj_paths[u32(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
 
         const Vector3 normal = Vector3Normalize(Vector3Subtract(pos, planetCenter));
         constexpr Vector3 up = {0, 1, 0};
@@ -66,12 +67,26 @@ static void _add_trees_around_planet(std::unique_ptr<zap::render::Scene> &scene,
         const f32 angle = acosf(Vector3DotProduct(up, normal));
 
         if (Vector3Length(axis) > EPSILON) {
-            tree->setRotationAxis(axis, angle * RAD2DEG);
+            obj->setRotationAxis(axis, angle * RAD2DEG);
         }
 
-        scene->add(std::move(tree));
+        scene->add(std::move(obj));
     }
 }
+
+// clang-format off
+static const std::vector<std::string> _tree_models = {
+    "assets/models/CommonTree_1.obj",
+    "assets/models/CommonTree_2.obj",
+    "assets/models/CommonTree_3.obj",
+    "assets/models/CommonTree_4.obj",
+};
+
+static const std::vector<std::string> _flower_models = {
+    "assets/models/Flower_3_Group.obj",
+    "assets/models/Flower_4_Group.obj"
+};
+// clang-format on
 
 static std::unique_ptr<zap::render::Scene> _create_main_scene()
 {
@@ -79,7 +94,8 @@ static std::unique_ptr<zap::render::Scene> _create_main_scene()
     zappy::Planet planet = {{25, 0, 25}, 15.0f};
 
     scene->add(_create_planet(planet));
-    _add_trees_around_planet(scene, planet._position, planet._radius + 0.5f, 10);
+    _add_models_around_planet(scene, _tree_models, planet._position, planet._radius + 0.5f, 10);
+    _add_models_around_planet(scene, _flower_models, planet._position, planet._radius + 0.5f, 20);
     scene->add(std::make_unique<zap::ZapCamera>());
     return scene;
 }
