@@ -5,6 +5,9 @@
 ** Application.cpp
 */
 
+#define ZAP_USE_RAYLIB_MATH
+#include <ZapGUI/Raylib.hpp>
+
 #include <ZapGUI/Drawable/Model.hpp>
 
 #include <App/Application.hpp>
@@ -13,14 +16,12 @@
 * public
 */
 
-static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string &obj_path)
-{
-    return std::make_unique<zap::ZapModel>(obj_path, "assets/textures/");
-}
-
 void zappy::Application::init()
 {
-    addScene("main", std::make_unique<zap::render::Scene>());
-    addToScene("main", _create_model("assets/models/CommonTree.obj"));
-    addCamera("main", std::make_unique<zap::ZapCamera>());
+    addScene("main", _create_main_scene());
+}
+
+void zappy::Application::update()
+{
+    zap::abstract::GameEngine::update();
 }

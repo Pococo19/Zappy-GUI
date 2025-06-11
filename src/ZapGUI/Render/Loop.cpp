@@ -21,6 +21,7 @@ void zap::render::Loop::run() const noexcept
 {
     while (!WindowShouldClose()) {
         _render();
+        _update();
     }
 }
 
@@ -35,4 +36,9 @@ void zap::render::Loop::_render() const noexcept
     _engine->render();
     DrawText("ESC to leave", 10, 10, 20, DARKGRAY);
     EndDrawing();
+}
+
+void zap::render::Loop::_update() const noexcept
+{
+    _engine->update();
 }

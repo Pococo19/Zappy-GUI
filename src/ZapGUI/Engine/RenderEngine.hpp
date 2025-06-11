@@ -17,6 +17,7 @@ class RenderEngine
         virtual void init() = 0;
         virtual void startup() = 0;
         virtual void render() = 0;
+        virtual void update() = 0;
         virtual void shutdown() = 0;
 };
 

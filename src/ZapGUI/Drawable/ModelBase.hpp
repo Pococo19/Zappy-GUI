@@ -31,19 +31,25 @@ class ModelBase
         void setPosition(const Vector3 &position);
         Vector3 getPosition() const;
 
-        void setScale(f32 scale);
-        f32 getScale() const;
+        void setScale(const Vector3 &scale);
+        void setScale(const f32 scale);
+        Vector3 getScale() const;
 
         void setTint(const Color &tint);
         Color getTint() const;
+
+        void setRotationAxis(const Vector3 &axis, const f32 angle);
 
     protected:
         Model _model;
         Texture _texture;
 
         Vector3 _position = {0.0f, 0.0f, 0.0f};
-        f32 _scale = 1.0f;
+        Vector3 _scale = {1.0f, 1.0f, 1.0f};
         Color _tint = WHITE;
+
+        Vector3 _rotationAxis = {0.0f, 1.0f, 0.0f};
+        f32 _rotationAngle = 0.0f;
 
         void _load_textures(const std::string &obj_file, const std::string &texture_directory);
 

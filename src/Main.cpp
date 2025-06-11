@@ -7,6 +7,8 @@
 
 #include <App/Application.hpp>
 #include <ZapGUI/Context.hpp>
+#include <ZapGUI/Logger.hpp>
+#include <ZapGUI/Macro.hpp>
 
 int main(void)
 {
