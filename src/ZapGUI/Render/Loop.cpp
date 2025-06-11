@@ -7,6 +7,8 @@
 
 #include <ZapGUI/Raylib.hpp>
 #include <ZapGUI/Render/Loop.hpp>
+#include <ZapGUI/Network/Client.hpp>
+#include <ZapGUI/Logger.hpp>
 
 /**
 * public
@@ -19,9 +21,17 @@ zap::render::Loop::Loop(abstract::RenderEngine *engine) noexcept : _engine(engin
 
 void zap::render::Loop::run() const noexcept
 {
+    zap::Client client("10.74.253.72", 8000);
+    if (!client.connectToServer()) {
+        std::cerr << "Failed to connect to server." << std::endl;
+        return;
+    }
+
     while (!WindowShouldClose()) {
+        client.sendMessage("Hello from GUI!");
         _render();
     }
+    client.closeSock();
 }
 
 /**
