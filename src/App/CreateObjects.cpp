@@ -11,6 +11,7 @@
 #include <App/Application.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
 
+#include <cmath>
 #include <random>
 
 static std::unique_ptr<zap::ZapModel> _create_model(const std::string &obj_path, const Vector3 &position)
@@ -42,15 +43,15 @@ static i32 _get_random_between(const i32 min, const i32 max)
     return dis(gen);
 }
 
-static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, int count)
+static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, u32 count)
 {
-    for (int i = 0; i < count; ++i) {
+    for (u32 i = 0; i < count; ++i) {
         const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    //<< 0 to π
         const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));//<< 0 to 2π
         const f32 radius = planet._radius;
         const Vector3 center = planet._position;
 
-        Vector3 pos = {radius * std::sinf(theta) * std::cosf(phi), radius * std::cosf(theta), radius * std::sinf(theta) * std::sinf(phi)};
+        Vector3 pos = {radius * sinf(theta) * cosf(phi), radius * cosf(theta), radius * sinf(theta) * sinf(phi)};
 
         pos = Vector3Add(center, pos);
 
