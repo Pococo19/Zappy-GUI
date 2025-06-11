@@ -8,7 +8,7 @@
 #include "ZapGUI/Network/Client.hpp"
 #include "Client.hpp"
 
-zap::Client::Client(const std::string& ip, int port)
+zappy::Client::Client(const std::string& ip, int port)
     : _ip(ip),
     _port(port),
     _sock(-1)
@@ -28,14 +28,14 @@ zap::Client::Client(const std::string& ip, int port)
     }
 }
 
-zap::Client::~Client()
+zappy::Client::~Client()
 {
     if (_sock >= 0) {
         close(_sock);
     }
 }
 
-bool zap::Client::connectToServer()
+bool zappy::Client::connectToServer()
 {
     if (connect(_sock, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) < 0) {
         std::cerr << "Échec de connexion au serveur." << std::endl;
@@ -45,7 +45,7 @@ bool zap::Client::connectToServer()
     return true;
 }
 
-bool zap::Client::sendMessage(const std::string& message)
+bool zappy::Client::sendMessage(const std::string& message)
 {
     if (send(_sock, message.c_str(), message.size(), 0) < 0) {
         std::cerr << "Erreur lors de l'envoi du message." << std::endl;
@@ -54,7 +54,7 @@ bool zap::Client::sendMessage(const std::string& message)
     return true;
 }
 
-std::string zap::Client::receiveMessage(size_t bufferSize)
+std::string zappy::Client::receiveMessage(size_t bufferSize)
 {
     char* buffer = new char[bufferSize];
     std::memset(buffer, 0, bufferSize);
@@ -66,7 +66,7 @@ std::string zap::Client::receiveMessage(size_t bufferSize)
     return message;
 }
 
-void zap::Client::closeSock()
+void zappy::Client::closeSock()
 {
     close(_sock);
 }

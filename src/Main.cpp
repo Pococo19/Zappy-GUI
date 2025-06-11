@@ -8,7 +8,13 @@
 #include <App/Application.hpp>
 #include <ZapGUI/Context.hpp>
 
-int main(void)
+int main(int ac, char **av)
 {
-    return zap::context::run(std::make_unique<zappy::Application>(), {1920, 1080}, "Zappy", 120);
+    if (ac < 5) {
+        std::cerr << "Usage: " << av[0] << " -p <port> -h <hostname>\n";
+        return 84;
+    }
+
+    zappy::Client client(av[2], std::stoi(av[4]));
+    return zap::context::run(std::make_unique<zappy::Application>(client), {1920, 1080}, "Zappy", 120);
 }

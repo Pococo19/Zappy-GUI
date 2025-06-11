@@ -36,7 +36,7 @@ i32 zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vector
     };
 
     std::unique_ptr<render::Loop> loop = std::make_unique<render::Loop>(engine.get());
-
+    
     try {
         loop->run();
     } catch (exception::Error &e) {

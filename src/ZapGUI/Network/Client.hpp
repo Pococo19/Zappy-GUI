@@ -13,7 +13,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-namespace zap {
+namespace zappy {
 
 class Client
 {
