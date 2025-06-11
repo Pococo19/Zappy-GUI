@@ -26,6 +26,14 @@ void zap::abstract::GameEngine::render()
     }
 }
 
+void zap::abstract::GameEngine::update()
+{
+    //TODO!!!
+    // for (const auto &scene : _scenes) {
+    //     scene.second->update();
+    // }
+}
+
 /**
 * protected
 */

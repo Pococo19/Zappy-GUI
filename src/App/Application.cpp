@@ -6,6 +6,7 @@
 */
 
 #include <ZapGUI/Drawable/Model.hpp>
+#include <ZapGUI/Logger.hpp>
 
 #include <App/Application.hpp>
 
@@ -29,4 +30,9 @@ void zappy::Application::init()
     addToScene("main", _create_heightmap("assets/textures/heightmap.png"));
     addToScene("main", _create_model("assets/models/CommonTree_1.obj"));
     addCamera("main", std::make_unique<zap::ZapCamera>());
+}
+
+void zappy::Application::update()
+{
+    zap::abstract::GameEngine::update();
 }

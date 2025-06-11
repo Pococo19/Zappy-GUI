@@ -16,6 +16,7 @@ class Application final : public zap::abstract::GameEngine
         ~Application() override = default;
 
         void init() override;
+        void update() override;
 
     private:
 };
