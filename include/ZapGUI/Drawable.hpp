@@ -5,6 +5,8 @@
 ** Drawable.hpp
 */
 
+#pragma once
+
 namespace zap::abstract {
 
 class Drawable
