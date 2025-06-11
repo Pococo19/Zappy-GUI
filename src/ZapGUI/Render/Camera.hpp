@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ZapGUI/NonCopyable.hpp>
+#define ZAP_USE_RAYLIB_MATH
 #include <ZapGUI/Raylib.hpp>
 #include <ZapGUI/Types.hpp>
 
@@ -19,7 +20,7 @@ class ZapCamera final : public abstract::NonCopyable
         explicit ZapCamera() noexcept;
         ~ZapCamera() noexcept = default;
 
-        void update(i32 mode = CAMERA_FREE) const noexcept;
+        void update(i32 mode = CAMERA_FREE) noexcept;
 
         [[nodiscard]] const Camera &get() const noexcept;
 
