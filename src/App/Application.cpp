@@ -21,6 +21,6 @@ static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string 
 void zappy::Application::init()
 {
     addScene("main", std::make_unique<zap::render::Scene>());
-    addToScene("main", _create_model("assets/models/CommonTree_1.obj"));
+    addToScene("main", _create_model("assets/models/CommonTree.obj"));
     addCamera("main", std::make_unique<zap::ZapCamera>());
 }

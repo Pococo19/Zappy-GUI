@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ZapGUI/Raylib.hpp>
+#include <ZapGUI/Types.hpp>
 
 #include <string>
 #include <vector>
@@ -30,8 +31,8 @@ class ModelBase
         void setPosition(const Vector3 &position);
         Vector3 getPosition() const;
 
-        void setScale(float scale);
-        float getScale() const;
+        void setScale(f32 scale);
+        f32 getScale() const;
 
         void setTint(const Color &tint);
         Color getTint() const;
@@ -41,7 +42,7 @@ class ModelBase
         Texture _texture;
 
         Vector3 _position = {0.0f, 0.0f, 0.0f};
-        float _scale = 1.0f;
+        f32 _scale = 1.0f;
         Color _tint = WHITE;
 
         void _load_textures(const std::string &obj_file, const std::string &texture_directory);

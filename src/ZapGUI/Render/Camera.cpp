@@ -24,7 +24,7 @@ zap::ZapCamera::ZapCamera() noexcept
     _camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void zap::ZapCamera::update(int mode) const noexcept
+void zap::ZapCamera::update(i32 mode) const noexcept
 {
     Camera *ptr = const_cast<Camera *>(&_camera);
 
@@ -54,7 +54,7 @@ void zap::ZapCamera::setTarget(const Vector3 &target) noexcept
     _camera.target = target;
 }
 
-void zap::ZapCamera::setFovy(float fovy) noexcept
+void zap::ZapCamera::setFovy(f32 fovy) noexcept
 {
     _camera.fovy = fovy;
 }
@@ -64,7 +64,7 @@ void zap::ZapCamera::setUp(const Vector3 &up) noexcept
     _camera.up = up;
 }
 
-void zap::ZapCamera::setProjection(int projection) noexcept
+void zap::ZapCamera::setProjection(i32 projection) noexcept
 {
     _camera.projection = projection;
 }
