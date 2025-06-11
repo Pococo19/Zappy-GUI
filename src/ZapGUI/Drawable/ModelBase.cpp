@@ -27,12 +27,12 @@ Vector3 zap::abstract::ModelBase::getPosition() const
     return _position;
 }
 
-void zap::abstract::ModelBase::setScale(float scale)
+void zap::abstract::ModelBase::setScale(f32 scale)
 {
     _scale = scale;
 }
 
-float zap::abstract::ModelBase::getScale() const
+f32 zap::abstract::ModelBase::getScale() const
 {
     return _scale;
 }
