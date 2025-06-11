@@ -21,10 +21,10 @@ class Client
         Client(const std::string& ip, int port);
         ~Client();
 
+        void closeSock();
         bool connectToServer();
         bool sendMessage(const std::string& message);
         std::string receiveMessage(size_t bufferSize = 1024);
-        void closeSock();
 
     private:
         std::string _ip;

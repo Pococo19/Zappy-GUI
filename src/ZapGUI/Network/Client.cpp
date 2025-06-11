@@ -15,7 +15,7 @@ zappy::Client::Client(const std::string& ip, int port)
 {
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock < 0) {
-        std::cerr << "Erreur lors de la création du socket." << std::endl;
+        std::cerr << "Socket creation failed." << std::endl;
         return;
     }
 
@@ -24,7 +24,7 @@ zappy::Client::Client(const std::string& ip, int port)
     _serverAddr.sin_port = htons(static_cast<uint16_t>(_port));
 
     if (inet_pton(AF_INET, _ip.c_str(), &_serverAddr.sin_addr) <= 0) {
-        std::cerr << "Adresse invalide." << std::endl;
+        std::cerr << "Invalid IP." << std::endl;
     }
 }
 
@@ -38,17 +38,17 @@ zappy::Client::~Client()
 bool zappy::Client::connectToServer()
 {
     if (connect(_sock, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) < 0) {
-        std::cerr << "Échec de connexion au serveur." << std::endl;
+        std::cerr << "Connection to server failed." << std::endl;
         return false;
     }
-    std::cout << "Connecté au serveur !" << std::endl;
+    std::cout << "Connected to server." << std::endl;
     return true;
 }
 
 bool zappy::Client::sendMessage(const std::string& message)
 {
     if (send(_sock, message.c_str(), message.size(), 0) < 0) {
-        std::cerr << "Erreur lors de l'envoi du message." << std::endl;
+        std::cerr << "Message sending failed." << std::endl;
         return false;
     }
     return true;

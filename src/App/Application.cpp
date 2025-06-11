@@ -13,10 +13,11 @@
 * public
 */
 
-zappy::Application::Application(const Client &client) : _client(client) // Initialize _client using the constructor initializer list
+zappy::Application::Application(Client *client)
+    : _client(client)
 {
-    if (!_client.connectToServer())
-        std::cerr << "Server not found\n";
+    if (!_client->connectToServer())
+        std::cerr << "Failed to connect.";
 }
 
 static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string &obj_path)
@@ -30,4 +31,3 @@ void zappy::Application::init()
     addToScene("main", _create_model("assets/models/CommonTree_1.obj"));
     addCamera("main", std::make_unique<zap::ZapCamera>());
 }
-

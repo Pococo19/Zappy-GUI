@@ -13,13 +13,13 @@ namespace zappy {
 class Application final : public zap::abstract::GameEngine
 {
     public:
-        Application(const Client &client);
+        Application(Client *client);
         ~Application() override = default;
 
         void init() override;
 
     private:
-        Client _client;
+        Client *_client;
 };
 
 }// namespace zappy
