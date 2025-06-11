@@ -26,4 +26,6 @@ class Application final : public zap::abstract::GameEngine
     private:
 };
 
+std::unique_ptr<zap::render::Scene> _create_main_scene();
+
 }// namespace zappy
