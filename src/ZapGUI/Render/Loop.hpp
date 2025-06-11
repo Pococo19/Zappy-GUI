@@ -24,6 +24,7 @@ class Loop final : public abstract::NonCopyable
 
     private:
         void _render() const noexcept;
+        void _update() const noexcept;
 
         abstract::RenderEngine *_engine;
 };

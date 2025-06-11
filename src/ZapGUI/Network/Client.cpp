@@ -8,9 +8,9 @@
 #include "ZapGUI/Network/Client.hpp"
 #include "Client.hpp"
 
-zappy::Client::Client(const std::string& ip, int port)
-    : _ip(ip),
-    _port(port),
+zappy::Client::Client(int port, const std::string &ip)
+    : _port(port),
+    _ip(ip),
     _sock(-1)
 {
     _sock = socket(AF_INET, SOCK_STREAM, 0);

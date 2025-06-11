@@ -16,7 +16,6 @@ int main(int ac, char **av)
     }
     std::cout << "Connecting to server at " << av[2] << ":" << av[4] << "...\n";
 
-    auto client = std::make_shared<zappy::Client>(av[2], std::stoi(av[4]));
+    auto client = std::make_unique<zappy::Client>(std::stoi(av[2]), av[4]);
     return zap::context::run(std::make_unique<zappy::Application>(client.get()), {1920, 1080}, "Zappy", 120);
 }
-

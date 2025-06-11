@@ -18,7 +18,7 @@ namespace zappy {
 class Client
 {
     public:
-        Client(const std::string& ip, int port);
+        Client(int port, const std::string &ip);
         ~Client();
 
         void closeSock();
@@ -27,8 +27,8 @@ class Client
         std::string receiveMessage(size_t bufferSize = 1024);
 
     private:
-        std::string _ip;
         int _port;
+        std::string _ip;
         int _sock;
         sockaddr_in _serverAddr;
 };

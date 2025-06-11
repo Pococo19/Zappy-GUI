@@ -9,6 +9,7 @@
 #include <ZapGUI/Render/Loop.hpp>
 #include <ZapGUI/Logger.hpp>
 #include <App/Application.hpp>
+#include "Loop.hpp"
 
 /**
 * public
@@ -22,6 +23,7 @@ zap::render::Loop::Loop(abstract::RenderEngine *engine) noexcept : _engine(engin
 void zap::render::Loop::run() const noexcept
 {
     while (!WindowShouldClose()) {
+        _update();
         _render();
     }
 }
@@ -33,11 +35,15 @@ void zap::render::Loop::run() const noexcept
 void zap::render::Loop::_render() const noexcept
 {
 
-    // std::string response = _client->receiveMessage();
     BeginDrawing();
     ClearBackground(RAYWHITE);
     _engine->render();
-    _engine->update();
     DrawText("ESC to leave", 10, 10, 20, DARKGRAY);
     EndDrawing();
+}
+
+
+void zap::render::Loop::_update() const noexcept
+{
+    _engine->update();
 }
