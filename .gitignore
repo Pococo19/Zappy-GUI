@@ -57,3 +57,7 @@ cmake-build-debug/
 
 console.log
 zappy_gui
+
+*.png
+*.mtl
+*.obj

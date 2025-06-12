@@ -1,3 +1,10 @@
+##
+## EPITECH PROJECT, 2025
+## Zappy-GUI
+## File description:
+## CMakeLists.txt
+##
+
 cmake_minimum_required(VERSION 3.16)
 project(zappy_gui VERSION 1.0 LANGUAGES C CXX)
 
