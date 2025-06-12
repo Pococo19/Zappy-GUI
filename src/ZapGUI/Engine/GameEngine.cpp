@@ -7,7 +7,6 @@
 
 #include <ZapGUI/Engine/GameEngine.hpp>
 #include <ZapGUI/Logger.hpp>
-#include "GameEngine.hpp"
 
 /**
 * public

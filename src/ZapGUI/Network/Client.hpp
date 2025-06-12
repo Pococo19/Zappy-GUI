@@ -7,31 +7,31 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <cstring>
+#include <ZapGUI/Types.hpp>
+
 #include <arpa/inet.h>
+#include <cstring>
+#include <string>
 #include <unistd.h>
-#include <vector>
 
 namespace zap {
 
-class Client
+class Client final
 {
     public:
-        explicit Client(int port, const std::string &ip);
+        explicit Client(const u16 port, const std::string &ip);
         ~Client() = default;
 
         void close();
         void connect();
-        void send(const std::string& message);
+        void send(const std::string &message);
         std::string receive(size_t bufferSize = 1024);
 
     private:
-        int _port;
+        u16 _port;
         std::string _ip;
-        int _sock;
-        sockaddr_in _serverAddr;
+        i32 _sock;
+        sockaddr_in _server_addr;
 };
 
-}
+}// namespace zap

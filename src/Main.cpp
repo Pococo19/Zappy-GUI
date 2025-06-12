@@ -6,19 +6,22 @@
 */
 
 #include <App/Application.hpp>
+
 #include <ZapGUI/Context.hpp>
-#include <ZapGUI/Filename.hpp>
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Macro.hpp>
 
-int main(int ac, char **av)
+int main(const int argc, const char **argv)
 {
-    if (ac < 5) {
-        std::cerr << "Usage: " << av[0] << " -p <port> -h <hostname>\n";
-        return 84;
-    }
-    std::cout << "Connecting to server at " << av[2] << ":" << av[4] << "...\n";
+    try {
+        const zappy::Flags flags = zappy::parse(argc, argv);
 
-    auto client = std::make_unique<zap::Client>(std::stoi(av[2]), av[4]);
-    return zap::context::run(std::make_unique<zappy::Application>(client.get()), {1920, 1080}, "Zappy", 120);
+        zap::context::run(std::make_unique<zappy::Application>(flags), ZAP_DEFAULT_WINDOW_SIZE, "Zappy", ZAP_DEFAULT_MAX_FRAMERATE);
+
+    } catch (const zap::exception::Error &e) {
+        zap::logger::error(e);
+        return ERROR;
+    }
+
+    return SUCCESS;
 }
