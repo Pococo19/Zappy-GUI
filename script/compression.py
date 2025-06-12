@@ -23,6 +23,10 @@ def collect_files(base_path: Path) -> list[tuple]:
 
     for root, _, filenames in os.walk(base_path):
         for name in filenames:
+
+            if name.endswith(".zip"):
+                continue
+
             file_path = Path(root) / name
             arcname = file_path.relative_to(base_path)
             files.append((file_path, arcname))
@@ -54,6 +58,11 @@ def zip_assets_threaded(source_path: Path, zip_path: Path) -> None:
 
     source_path = Path(source_path).resolve()
     zip_path = Path(zip_path).resolve()
+
+    if source_path.suffix == ".zip":
+        print("Error: source path must not be a .zip file!", file=sys.stderr)
+        sys.exit(84)
+
 
     print("Collecting files...")
     file_list = collect_files(source_path)
