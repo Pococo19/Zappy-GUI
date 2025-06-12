@@ -81,6 +81,11 @@ target_compile_options(zappy_gui PRIVATE
     -Wwrite-strings
 )
 
+option(ENABLE_EXTERNAL "Enable external macros and flags" OFF)
+if (ENABLE_EXTERNAL)
+target_compile_definitions(zappy_gui PRIVATE ZAP_DEFAULT_BASE_PATH="external/Zappy-GUI/")
+endif()
+
 ########################################
 # NOTE: debug
 ########################################

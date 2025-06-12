@@ -7,14 +7,16 @@
 
 #pragma once
 
+#ifndef ZAP_DEFAULT_BASE_PATH
+    #define ZAP_DEFAULT_BASE_PATH ""
+#endif
+
 #include <ZapGUI/Error.hpp>
 
 #include <fstream>
 #include <vector>
 
 namespace zap::Filename {
-
-extern std::string __base__;
 
 [[nodiscard]] std::string getPath(const std::string &name);
 

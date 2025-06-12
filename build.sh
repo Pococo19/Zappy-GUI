@@ -42,6 +42,26 @@ function _all()
     _error "compilation error" "failed to compile zappy_gui"
 }
 
+function _external()
+{
+    if ! { command -v cmake > /dev/null; } 2>&1; then
+        _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
+    fi
+    _success "command 'cmake' found, building..."
+    _info "updating external submodules..."
+    git submodule update --init --recursive
+    _success "updated external submodules !"
+    mkdir -p build
+    cd build || _error "mkdir failed"
+    cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=ON
+    # INFO: Epitech's moulinette does: `cmake --build .` but this is slow as fuc
+    if make -j"$(nproc)" zappy_gui; then
+        _success "compiled zappy_gui"
+        exit 0
+    fi
+    _error "compilation error" "failed to compile zappy_gui"
+}
+
 function _debug()
 {
     if ! { command -v cmake > /dev/null; } 2>&1; then
@@ -115,6 +135,9 @@ ARGUMENTS:
       $0 [-t|--tests]   run unit tests
 EOF
         exit 0
+        ;;
+    -e|--external)
+        _external
         ;;
     -c|--clean)
         _clean
