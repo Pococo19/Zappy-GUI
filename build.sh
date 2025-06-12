@@ -24,7 +24,7 @@ function _info()
 
 function _base_run()
 {
-    local cmake_args = $1
+    local cmake_args="$1"
 
     if ! { command -v cmake > /dev/null; } 2>&1; then
         _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
@@ -44,19 +44,19 @@ function _base_run()
 
 function _all()
 {
-    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=OFF -DENABLE_DEBUG=OFF"
+    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_DEBUG=OFF -DENABLE_EXTERNAL=OFF"
     exit 0
 }
 
 function _external()
 {
-    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=ON -DENABLE_DEBUG=OFF"
+    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_DEBUG=OFF -DENABLE_EXTERNAL=ON"
     exit 0
 }
 
 function _debug()
 {
-    _base_run "-DCMAKE_BUILD_TYPE=Debug -DENABLE_EXTERNAL=OFF -DENABLE_DEBUG=ON"
+    _base_run "-DCMAKE_BUILD_TYPE=Debug -DENABLE_DEBUG=ON -DENABLE_EXTERNAL=OFF"
     exit 0
 }
 
