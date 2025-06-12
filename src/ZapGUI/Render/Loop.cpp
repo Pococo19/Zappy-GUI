@@ -7,6 +7,9 @@
 
 #include <ZapGUI/Raylib.hpp>
 #include <ZapGUI/Render/Loop.hpp>
+#include <ZapGUI/Logger.hpp>
+#include <App/Application.hpp>
+#include "Loop.hpp"
 
 /**
 * public
@@ -31,6 +34,7 @@ void zap::render::Loop::run() const noexcept
 
 void zap::render::Loop::_render() const noexcept
 {
+
     BeginDrawing();
     ClearBackground(RAYWHITE);
     _engine->render();

@@ -6,6 +6,7 @@
 */
 
 #include <ZapGUI/Engine/GameEngine.hpp>
+#include <ZapGUI/Network/Client.hpp>
 
 namespace zappy {
 
@@ -17,13 +18,15 @@ struct Planet {
 class Application final : public zap::abstract::GameEngine
 {
     public:
-        explicit Application() = default;
+        Application(zap::Client *client);
         ~Application() override = default;
 
         void init() override;
         void update() override;
 
     private:
+        zap::Client *_client;
+        std::string _serverResponse;
 };
 
 std::shared_ptr<zap::render::Scene> _create_main_scene();

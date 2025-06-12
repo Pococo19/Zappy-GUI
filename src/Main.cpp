@@ -11,7 +11,14 @@
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Macro.hpp>
 
-int main(void)
+int main(int ac, char **av)
 {
-    return zap::context::run(std::make_unique<zappy::Application>(), {1920, 1080}, "Zappy", 120);
+    if (ac < 5) {
+        std::cerr << "Usage: " << av[0] << " -p <port> -h <hostname>\n";
+        return 84;
+    }
+    std::cout << "Connecting to server at " << av[2] << ":" << av[4] << "...\n";
+
+    auto client = std::make_unique<zap::Client>(std::stoi(av[2]), av[4]);
+    return zap::context::run(std::make_unique<zappy::Application>(client.get()), {1920, 1080}, "Zappy", 120);
 }
