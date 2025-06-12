@@ -12,6 +12,8 @@
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Logger.hpp>
 
+#include <ZapGUI/Filename.hpp>
+
 #include <cmath>
 #include <random>
 
@@ -109,21 +111,21 @@ static inline void _clear_positions()
 
 // clang-format off
 static const std::vector<std::string> _tree_models = {
-    "assets/models/CommonTree_1.obj",
-    "assets/models/CommonTree_2.obj",
-    "assets/models/CommonTree_3.obj",
-    "assets/models/CommonTree_4.obj"
+    zap::Filename::getPath("assets/models/CommonTree_1.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_2.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_3.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_4.obj"),
 };
 
 static const std::vector<std::string> _flower_models = {
-    "assets/models/Flower_3_Group.obj",
-    "assets/models/Flower_4_Group.obj",
-    "assets/models/Mushroom_Common.obj",
-    "assets/models/Mushroom_Laetiporus.obj",
-    "assets/models/Grass_Common_Tall.obj",
-    "assets/models/Grass_Common_Short.obj",
-    "assets/models/Grass_Wispy_Tall.obj",
-    "assets/models/Grass_Wispy_Short.obj"
+    zap::Filename::getPath("assets/models/Flower_3_Group.obj"),
+    zap::Filename::getPath("assets/models/Flower_4_Group.obj"),
+    zap::Filename::getPath("assets/models/Mushroom_Common.obj"),
+    zap::Filename::getPath("assets/models/Mushroom_Laetiporus.obj"),
+    zap::Filename::getPath("assets/models/Grass_Common_Tall.obj"),
+    zap::Filename::getPath("assets/models/Grass_Common_Short.obj"),
+    zap::Filename::getPath("assets/models/Grass_Wispy_Tall.obj"),
+    zap::Filename::getPath("assets/models/Grass_Wispy_Short.obj")
 };
 // clang-format on
 

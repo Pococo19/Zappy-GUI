@@ -7,10 +7,13 @@
 
 #include <App/Application.hpp>
 #include <ZapGUI/Context.hpp>
+#include <ZapGUI/Filename.hpp>
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Macro.hpp>
 
 int main(void)
 {
+    // zap::Filename::__base__ = "external/Zappy-GUI";
+    //
     return zap::context::run(std::make_unique<zappy::Application>(), {1920, 1080}, "Zappy", 120);
 }
