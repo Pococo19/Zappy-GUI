@@ -20,8 +20,8 @@ zap::render::Loop::Loop(abstract::RenderEngine *engine) noexcept : _engine(engin
 void zap::render::Loop::run() const noexcept
 {
     while (!WindowShouldClose()) {
-        _render();
         _update();
+        _render();
     }
 }
 

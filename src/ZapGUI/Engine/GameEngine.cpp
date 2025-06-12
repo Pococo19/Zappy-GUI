@@ -28,17 +28,16 @@ void zap::abstract::GameEngine::render()
 
 void zap::abstract::GameEngine::update()
 {
-    //TODO!!!
-    // for (const auto &scene : _scenes) {
-    //     scene.second->update();
-    // }
+    for (const auto &scene : _scenes) {
+        scene.second->update();
+    }
 }
 
 /**
 * protected
 */
 
-void zap::abstract::GameEngine::addScene(const std::string &name, std::unique_ptr<render::Scene> scene)
+void zap::abstract::GameEngine::addScene(const std::string &name, std::shared_ptr<render::Scene> scene)
 {
     if (_scenes.contains(name)) {
         logger::debug("scene ", name, " already exists");
@@ -47,20 +46,20 @@ void zap::abstract::GameEngine::addScene(const std::string &name, std::unique_pt
     _scenes.emplace(name, std::move(scene));
 }
 
-void zap::abstract::GameEngine::addToScene(const std::string &name, std::unique_ptr<abstract::Drawable> object)
+void zap::abstract::GameEngine::addToScene(const std::string &name, std::shared_ptr<abstract::Drawable> object)
 {
     if (!_scenes.contains(name)) {
         logger::debug("scene ", name, "does not exist, creating it");
-        this->addScene(name, std::make_unique<render::Scene>());
+        this->addScene(name, std::make_shared<render::Scene>());
     }
     _scenes.at(name)->add(std::move(object));
 }
 
-void zap::abstract::GameEngine::addCamera(const std::string &name, std::unique_ptr<ZapCamera> camera)
+void zap::abstract::GameEngine::addCamera(const std::string &name, std::shared_ptr<ZapCamera> camera)
 {
     if (!_scenes.contains(name)) {
         logger::debug("scene ", name, "does not exist, creating it");
-        this->addScene(name, std::make_unique<render::Scene>());
+        this->addScene(name, std::make_shared<render::Scene>());
     }
     _scenes.at(name)->add(std::move(camera));
 }

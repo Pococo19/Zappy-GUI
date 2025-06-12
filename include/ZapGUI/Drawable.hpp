@@ -14,6 +14,7 @@ class Drawable
     public:
         virtual ~Drawable() = default;
         virtual void draw() const = 0;
+        virtual void update() = 0;
 };
 
 }// namespace zap::abstract

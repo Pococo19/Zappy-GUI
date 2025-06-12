@@ -27,12 +27,12 @@ class GameEngine : public abstract::RenderEngine
         void shutdown() override;
 
     protected:
-        void addScene(const std::string &name, std::unique_ptr<render::Scene> scene);
-        void addToScene(const std::string &name, std::unique_ptr<abstract::Drawable> object);
-        void addCamera(const std::string &name, std::unique_ptr<ZapCamera> camera);
+        void addScene(const std::string &name, std::shared_ptr<render::Scene> scene);
+        void addToScene(const std::string &name, std::shared_ptr<abstract::Drawable> object);
+        void addCamera(const std::string &name, std::shared_ptr<ZapCamera> camera);
 
     private:
-        std::unordered_map<std::string, std::unique_ptr<render::Scene>> _scenes;
+        std::unordered_map<std::string, std::shared_ptr<render::Scene>> _scenes;
 };
 
 }// namespace zap::abstract
