@@ -24,7 +24,7 @@ function _info()
 
 function _base_run()
 {
-    local cmake_args = $1
+    local cmake_args="$1"
 
     if ! { command -v cmake > /dev/null; } 2>&1; then
         _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
