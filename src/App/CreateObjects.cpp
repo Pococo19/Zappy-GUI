@@ -10,6 +10,7 @@
 
 #include <App/Application.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
+#include <ZapGUI/Logger.hpp>
 
 #include <cmath>
 #include <random>
@@ -43,17 +44,48 @@ static i32 _get_random_between(const i32 min, const i32 max)
     return dis(gen);
 }
 
-static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, u32 count)
+static std::vector<Vector3> __positions;
+
+static inline bool _is_position_too_close(const Vector3 &new_pos, f32 min_distance)
 {
+    for (const auto &existing_pos : __positions) {
+        if (Vector3Distance(new_pos, existing_pos) < min_distance) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void _seed_models_around_planet(std::unique_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, u32 count)
+{
+    constexpr f32 MIN_DISTANCE = 2.0f;
+    constexpr u32 MAX_ATTEMPTS = 100;
+
     for (u32 i = 0; i < count; ++i) {
-        const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    //<< 0 to π
-        const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));//<< 0 to 2π
-        const f32 radius = planet._radius;
-        const Vector3 center = planet._position;
+        Vector3 pos;
+        Vector3 center;
+        bool valid_position_found = false;
 
-        Vector3 pos = {radius * sinf(theta) * cosf(phi), radius * cosf(theta), radius * sinf(theta) * sinf(phi)};
+        for (u32 attempt = 0; attempt < MAX_ATTEMPTS; ++attempt) {
+            const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    //<< 0 to π
+            const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));//<< 0 to 2π
+            const f32 radius = planet._radius;
+            center = planet._position;
 
-        pos = Vector3Add(center, pos);
+            pos = {radius * sinf(theta) * cosf(phi), radius * cosf(theta), radius * sinf(theta) * sinf(phi)};
+            pos = Vector3Add(center, pos);
+
+            if (!_is_position_too_close(pos, MIN_DISTANCE)) {
+                valid_position_found = true;
+                break;
+            }
+        }
+
+        if (!valid_position_found) {
+            zap::logger::debug("Could not find a valid position for object", i, " after ", MAX_ATTEMPTS, " attempts");
+        }
+
+        __positions.push_back(pos);
 
         auto obj = _create_model(obj_paths[static_cast<u32>(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
 
@@ -68,6 +100,11 @@ static void _add_models_around_planet(std::unique_ptr<zap::render::Scene> &scene
 
         scene->add(std::move(obj));
     }
+}
+
+static inline void _clear_positions()
+{
+    __positions.clear();
 }
 
 // clang-format off
@@ -88,15 +125,18 @@ static const std::vector<std::string> _flower_models = {
     "assets/models/Grass_Wispy_Tall.obj",
     "assets/models/Grass_Wispy_Short.obj"
 };
+// clang-format on
 
 std::unique_ptr<zap::render::Scene> zappy::_create_main_scene()
 {
+    _clear_positions();
+
     auto scene = std::make_unique<zap::render::Scene>();
     constexpr zappy::Planet planet = {{25, 0, 25}, 15.0f};
 
     scene->add(_create_planet(planet));
-    _add_models_around_planet(scene, _tree_models, planet, 10);
-    _add_models_around_planet(scene, _flower_models, planet, 50);
+    _seed_models_around_planet(scene, _tree_models, planet, 10);
+    _seed_models_around_planet(scene, _flower_models, planet, 50);
     scene->add(std::make_unique<zap::ZapCamera>());
     return scene;
 }
