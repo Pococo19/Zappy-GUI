@@ -6,18 +6,17 @@
 */
 
 #include <ZapGUI/Drawable/Model.hpp>
-
+#include <ZapGUI/Error.hpp>
 #include <App/Application.hpp>
 
 /**
 * public
 */
 
-zappy::Application::Application(Client *client)
+zappy::Application::Application(zap::Client *client)
     : _client(client)
 {
-    if (!_client->connectToServer())
-        std::cerr << "Failed to connect.\n";
+    _client->connect();
 }
 
 static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string &obj_path)
@@ -36,5 +35,5 @@ void zappy::Application::update()
 {
     zap::abstract::GameEngine::update();
     // _serverResponse = _client->receiveMessage();
-    _client->sendMessage("HELLOOO");
+    _client->send("HELLOOO");
 }

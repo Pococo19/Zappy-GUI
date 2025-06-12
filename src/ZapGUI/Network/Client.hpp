@@ -12,19 +12,20 @@
 #include <cstring>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <vector>
 
-namespace zappy {
+namespace zap {
 
 class Client
 {
     public:
-        Client(int port, const std::string &ip);
-        ~Client();
+        explicit Client(int port, const std::string &ip);
+        ~Client() = default;
 
-        void closeSock();
-        bool connectToServer();
-        bool sendMessage(const std::string& message);
-        std::string receiveMessage(size_t bufferSize = 1024);
+        void close();
+        void connect();
+        void send(const std::string& message);
+        std::string receive(size_t bufferSize = 1024);
 
     private:
         int _port;

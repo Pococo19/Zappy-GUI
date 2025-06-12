@@ -6,67 +6,54 @@
 */
 
 #include "ZapGUI/Network/Client.hpp"
-#include "Client.hpp"
+#include <ZapGUI/Error.hpp>
 
-zappy::Client::Client(int port, const std::string &ip)
-    : _port(port),
-    _ip(ip),
-    _sock(-1)
+zap::Client::Client(int port, const std::string &ip)
+    : _port(port), _ip(ip), _sock(-1)
 {
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock < 0) {
-        std::cerr << "Socket creation failed." << std::endl;
-        return;
+        throw exception::Error("Client::IP", "socket creation failed");
     }
-
-    _serverAddr = {};
     _serverAddr.sin_family = AF_INET;
     _serverAddr.sin_port = htons(static_cast<uint16_t>(_port));
 
     if (inet_pton(AF_INET, _ip.c_str(), &_serverAddr.sin_addr) <= 0) {
-        std::cerr << "Invalid IP." << std::endl;
+        throw exception::Error("Client::IP", "Invalid IP address");
     }
 }
 
-zappy::Client::~Client()
+void zap::Client::connect()
 {
-    if (_sock >= 0) {
-        close(_sock);
-    }
-}
-
-bool zappy::Client::connectToServer()
-{
-    if (connect(_sock, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) < 0) {
-        std::cerr << "Connection to server failed." << std::endl;
-        return false;
+    if (::connect(_sock, reinterpret_cast<sockaddr*>(&_serverAddr), sizeof(_serverAddr)) < 0) {
+        throw exception::Error("Client::connect", "server connection failed");
     }
     std::cout << "Connected to server." << std::endl;
-    return true;
 }
 
-bool zappy::Client::sendMessage(const std::string& message)
+void zap::Client::send(const std::string& message)
 {
-    if (send(_sock, message.c_str(), message.size(), 0) < 0) {
-        std::cerr << "Message sending failed." << std::endl;
-        return false;
+    ssize_t sent = write(_sock, message.c_str(), message.size());
+    if (sent < 0) {
+        throw exception::Error("Client::send", "server sending failed");
     }
-    return true;
 }
 
-std::string zappy::Client::receiveMessage(size_t bufferSize)
+std::string zap::Client::receive(size_t bufferSize)
 {
-    char* buffer = new char[bufferSize];
-    std::memset(buffer, 0, bufferSize);
+    std::vector<char> buffer(bufferSize, 0);
+    ssize_t bytesRead = read(_sock, buffer.data(), bufferSize - 1);
 
-    ssize_t bytesRead = recv(_sock, buffer, bufferSize - 1, 0);
-    std::string message = (bytesRead > 0) ? std::string(buffer) : "";
-
-    delete[] buffer;
-    return message;
+    if (bytesRead <= 0) {
+        throw exception::Error("Client::receive", "server reception failed");
+    }
+    return buffer.data() + std::to_string(bytesRead);
 }
 
-void zappy::Client::closeSock()
+void zap::Client::close()
 {
-    close(_sock);
+    if (_sock >= 0) {
+        ::close(_sock);
+        _sock = -1;
+    }
 }
