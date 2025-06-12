@@ -9,11 +9,9 @@
 
 #include <filesystem>
 
-std::string zap::Filename::__base__ = "";
-
 std::string zap::Filename::getPath(const std::string &name)
 {
-    const std::filesystem::path absolute = std::filesystem::absolute(__base__ + name);
+    const std::filesystem::path absolute = std::filesystem::absolute(ZAP_DEFAULT_BASE_PATH + name);
 
     return absolute.string();
 }
