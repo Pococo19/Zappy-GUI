@@ -22,6 +22,38 @@ function _info()
     echo -e "${ORG}[🚧] RUNNING:\t${RST} ${ILC}$1${RST}"
 }
 
+function _run_compression()
+{
+    if ! { command -v python3 > /dev/null; } 2>&1; then
+        _error "command 'python3' not found" "please install 'python3' or 'nix develop' 🤓"
+    fi
+    _info "command 'python3' found, running extraction script..."
+    if ! python3 script/compression.py unzip assets/models/models.zip assets/models; then
+        _error "script/compression.py error" "failed to run extraction script for assets/models"
+    fi
+    if ! python3 script/compression.py unzip assets/textures/textures.zip assets/textures; then
+        _error "script/compression.py error" "failed to run extraction script for assets/textures"
+    fi
+    _success "extraction script completed successfully"
+}
+
+function _check_assets()
+{
+    local required_ext=("obj" "mtl" "png")
+    local missing=0
+
+    for ext in "${required_ext[@]}"; do
+        if ! find assets -type f -name "*.${ext}" | grep -q .; then
+            _info "No .${ext} files found in assets directory"
+            _info "Running extraction script to generate them"
+            cd .. || _error "cd failed"
+            _run_compression
+        else
+            _success "Found .${ext} files in assets directory"
+        fi
+    done
+}
+
 function _base_run()
 {
     local cmake_args="$1"
@@ -40,6 +72,7 @@ function _base_run()
         _error "compilation error" "failed to compile zappy_gui"
     fi
     _success "compiled zappy_gui"
+    _check_assets
 }
 
 function _all()
