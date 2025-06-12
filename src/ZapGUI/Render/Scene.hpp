@@ -22,15 +22,16 @@ class Scene final : abstract::NonCopyable
         constexpr explicit Scene() = default;
         ~Scene() = default;
 
-        void add(std::unique_ptr<abstract::Drawable> object);
-        void add(std::unique_ptr<ZapCamera> camera);
+        void add(std::shared_ptr<abstract::Drawable> object);
+        void add(std::shared_ptr<ZapCamera> camera);
         void remove(abstract::Drawable *object);
 
         void render();
+        void update();
 
     private:
-        std::vector<std::unique_ptr<zap::abstract::Drawable>> _objects;
-        std::unique_ptr<ZapCamera> _camera;
+        std::vector<std::shared_ptr<zap::abstract::Drawable>> _objects;
+        std::shared_ptr<ZapCamera> _camera;
 };
 
 }// namespace zap::render

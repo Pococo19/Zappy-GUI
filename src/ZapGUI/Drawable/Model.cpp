@@ -41,11 +41,16 @@ void zap::ZapModel::draw() const
     DrawModelEx(_model, _position, _rotationAxis, _rotationAngle, _scale, _tint);
 }
 
+void zap::ZapModel::update()
+{
+    /* __update__ */
+}
+
 /**
 * static
 */
 
-std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &heightmap_path, const std::string &texture_path, const f32 max_height)
+std::shared_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &heightmap_path, const std::string &texture_path, const f32 max_height)
 {
     if (!Filename::exists(heightmap_path)) {
         throw exception::Error("zap::ZapModel::from_heightmap", "File not found: ", heightmap_path);
@@ -73,5 +78,5 @@ std::unique_ptr<zap::ZapModel> zap::ZapModel::from_heightmap(const std::string &
         SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);
     }
 
-    return std::make_unique<zap::ZapModel>(model);
+    return std::make_shared<zap::ZapModel>(model);
 }

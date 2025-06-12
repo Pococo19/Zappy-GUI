@@ -23,6 +23,9 @@
 #if defined ZAP_USE_RAYLIB_MATH
 #include <raymath.h>
 #endif
+#if defined ZAP_USE_RAYLIB_RLGL
+#include <raylib/src/rlgl.h>
+#endif
 #if defined(__clang__)
     #pragma clang diagnostic pop
 #elif defined(__GNUC__)

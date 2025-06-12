@@ -14,12 +14,12 @@
 * public
 */
 
-void zap::render::Scene::add(std::unique_ptr<zap::abstract::Drawable> object)
+void zap::render::Scene::add(std::shared_ptr<zap::abstract::Drawable> object)
 {
-    _objects.emplace_back(std::move(object));
+    _objects.emplace_back(object);
 }
 
-void zap::render::Scene::add(std::unique_ptr<ZapCamera> camera)
+void zap::render::Scene::add(std::shared_ptr<ZapCamera> camera)
 {
     _camera.reset();
     _camera = std::move(camera);
@@ -29,7 +29,7 @@ void zap::render::Scene::add(std::unique_ptr<ZapCamera> camera)
 void zap::render::Scene::remove(zap::abstract::Drawable *object)
 {
     const auto it = std::remove_if(_objects.begin(), _objects.end(),
-        [object]( const std::unique_ptr<zap::abstract::Drawable> &ptr)
+        [object]( const std::shared_ptr<zap::abstract::Drawable> &ptr)
         {
             return ptr.get() == object;
         });
@@ -38,14 +38,20 @@ void zap::render::Scene::remove(zap::abstract::Drawable *object)
 }
 // clang-format on
 
-void zap::render::Scene::render()
+void zap::render::Scene::update()
 {
     if (!_camera) {
         throw exception::Error("Scene::render", "No camera set for the scene");
     }
-
     _camera->update();
 
+    for (const auto &object : _objects) {
+        object->update();
+    }
+}
+
+void zap::render::Scene::render()
+{
     BeginMode3D(_camera->get());
     for (const auto &object : _objects) {
         object->draw();
