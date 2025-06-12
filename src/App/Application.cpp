@@ -22,11 +22,6 @@ zappy::Application::Application(const parser::Flags &flags)
     _client->connect();
 }
 
-static std::unique_ptr<zap::abstract::Drawable> __attribute_maybe_unused__ _create_model(const std::string &obj_path)
-{
-    return std::make_unique<zap::ZapModel>(obj_path, "assets/textures/");
-}
-
 void zappy::Application::init()
 {
     addScene("main", _create_main_scene());

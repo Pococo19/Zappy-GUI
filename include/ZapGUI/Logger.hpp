@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ZapGUI/Error.hpp>
+#include <ZapGUI/Macro.hpp>
 
 #ifdef DEBUG
     #include <iostream>
@@ -26,7 +27,7 @@ constexpr const char *ZAP_RESET = "\033[0m";
 void error(const zap::exception::Error &e);
 
 template<typename... Args>
-static inline void debug(__attribute_maybe_unused__ Args &&...args)
+static inline void debug(UNUSED Args &&...args)
 {
 #ifdef DEBUG
     std::ostringstream oss;
@@ -36,7 +37,7 @@ static inline void debug(__attribute_maybe_unused__ Args &&...args)
 }
 
 template<typename... Args>
-static inline void task_start(__attribute_maybe_unused__ Args &&...args)
+static inline void task_start(UNUSED Args &&...args)
 {
 #ifdef DEBUG
     std::ostringstream oss;
@@ -46,7 +47,7 @@ static inline void task_start(__attribute_maybe_unused__ Args &&...args)
 }
 
 template<typename... Args>
-static inline void task_done(__attribute_maybe_unused__ Args &&...args)
+static inline void task_done(UNUSED Args &&...args)
 {
 #ifdef DEBUG
     std::ostringstream oss;
