@@ -7,6 +7,9 @@
 
 #include <App/Application.hpp>
 #include <ZapGUI/Context.hpp>
+#include <ZapGUI/Filename.hpp>
+#include <ZapGUI/Logger.hpp>
+#include <ZapGUI/Macro.hpp>
 
 int main(int ac, char **av)
 {

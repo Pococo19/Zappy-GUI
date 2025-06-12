@@ -5,6 +5,9 @@
 ** Application.cpp
 */
 
+#define ZAP_USE_RAYLIB_MATH
+#include <ZapGUI/Raylib.hpp>
+
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Error.hpp>
 #include <App/Application.hpp>
@@ -19,21 +22,18 @@ zappy::Application::Application(zap::Client *client)
     _client->connect();
 }
 
-static std::unique_ptr<zap::abstract::Drawable> _create_model(const std::string &obj_path)
+static std::unique_ptr<zap::abstract::Drawable> __attribute_maybe_unused__ _create_model(const std::string &obj_path)
 {
     return std::make_unique<zap::ZapModel>(obj_path, "assets/textures/");
 }
 
 void zappy::Application::init()
 {
-    addScene("main", std::make_unique<zap::render::Scene>());
-    addToScene("main", _create_model("assets/models/CommonTree_1.obj"));
-    addCamera("main", std::make_unique<zap::ZapCamera>());
+    addScene("main", _create_main_scene());
 }
 
 void zappy::Application::update()
 {
     zap::abstract::GameEngine::update();
-    // _serverResponse = _client->receiveMessage();
     _client->send("HELLOOO");
 }

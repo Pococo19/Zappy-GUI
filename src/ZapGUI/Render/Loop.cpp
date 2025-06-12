@@ -42,7 +42,6 @@ void zap::render::Loop::_render() const noexcept
     EndDrawing();
 }
 
-
 void zap::render::Loop::_update() const noexcept
 {
     _engine->update();

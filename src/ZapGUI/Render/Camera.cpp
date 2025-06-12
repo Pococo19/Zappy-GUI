@@ -24,11 +24,32 @@ zap::ZapCamera::ZapCamera() noexcept
     _camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void zap::ZapCamera::update(i32 mode) const noexcept
+void zap::ZapCamera::update(const i32 mode) noexcept
 {
-    Camera *ptr = const_cast<Camera *>(&_camera);
+    /** @brief camera direction */
+    Vector3 forward = Vector3Subtract(_camera.target, _camera.position);
 
-    UpdateCamera(ptr, mode);
+    /** @brief rotation around the "forward" axis (roll) */
+    forward = Vector3Normalize(forward);
+
+    bool manual_roll = false;
+
+    if (IsKeyDown(KEY_Q)) {
+        const Matrix rot = MatrixRotate(forward, -ROTATION_SPEED);
+        _camera.up = Vector3Transform(_camera.up, rot);
+        manual_roll = true;
+    }
+    if (IsKeyDown(KEY_E)) {
+        const Matrix rot = MatrixRotate(forward, ROTATION_SPEED);
+        _camera.up = Vector3Transform(_camera.up, rot);
+        manual_roll = true;
+    }
+
+    if (manual_roll) {
+        _camera.target = Vector3Add(_camera.position, forward);
+        return;
+    }
+    UpdateCamera(&_camera, mode);
 }
 
 /**

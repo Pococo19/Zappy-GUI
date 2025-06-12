@@ -14,6 +14,8 @@
 
 namespace zap::Filename {
 
+extern std::string __base__;
+
 [[nodiscard]] std::string getPath(const std::string &name);
 
 [[nodiscard]] bool exists(const std::string &path);
