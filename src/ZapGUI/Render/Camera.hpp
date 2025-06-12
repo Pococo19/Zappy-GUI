@@ -32,6 +32,8 @@ class ZapCamera final : public abstract::NonCopyable
 
     private:
         Camera _camera;
+
+        static constexpr f32 ROTATION_SPEED = 0.025f;
 };
 
 }// namespace zap

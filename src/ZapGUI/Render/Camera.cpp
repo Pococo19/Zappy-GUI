@@ -26,8 +26,6 @@ zap::ZapCamera::ZapCamera() noexcept
 
 void zap::ZapCamera::update(const i32 mode) noexcept
 {
-    const float rotation_speed = 0.03f;
-
     /** @brief camera direction */
     Vector3 forward = Vector3Subtract(_camera.target, _camera.position);
 
@@ -37,12 +35,12 @@ void zap::ZapCamera::update(const i32 mode) noexcept
     bool manual_roll = false;
 
     if (IsKeyDown(KEY_Q)) {
-        const Matrix rot = MatrixRotate(forward, -rotation_speed);
+        const Matrix rot = MatrixRotate(forward, -ROTATION_SPEED);
         _camera.up = Vector3Transform(_camera.up, rot);
         manual_roll = true;
     }
     if (IsKeyDown(KEY_E)) {
-        const Matrix rot = MatrixRotate(forward, rotation_speed);
+        const Matrix rot = MatrixRotate(forward, ROTATION_SPEED);
         _camera.up = Vector3Transform(_camera.up, rot);
         manual_roll = true;
     }
