@@ -10,17 +10,17 @@
 
 #include <iostream>
 
-void zappy::usage()
+void parser::usage()
 {
     std::cout << "Usage: zappy-gui [options]" << std::endl
               << "Options:" << std::endl
               << "  -p <port>       Set the port number (default: 0)" << std::endl
               << "  -h <hostname>   Set the hostname (default: localhost)" << std::endl
               << "  -v, --version   Show version information" << std::endl
-              << "  -h, --help      Show this help message" << std::endl;
+              << "  -help, --help      Show this help message" << std::endl;
 }
 
-void zappy::version()
+void parser::version()
 {
     std::cout << "Zappy GUI Version " << ZAP_GUI_VERSION << std::endl;
 }
@@ -30,9 +30,9 @@ void zappy::version()
 * @details parse flags see --help for usage
 * @return Flags (struct defined in Parse.hpp)
 */
-const zappy::Flags zappy::parse(const int argc, const char **argv)
+const parser::Flags parser::parse(const int argc, const char **argv)
 {
-    zappy::Flags flags;
+    parser::Flags flags;
 
     /**
      * @brief zap client execution flags

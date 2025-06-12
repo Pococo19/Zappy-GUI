@@ -16,9 +16,10 @@
 * public
 */
 
-zappy::Application::Application(const Flags &flags) : _client(flags.port, flags.hostname)
+zappy::Application::Application(const parser::Flags &flags)
 {
-    _client.connect();
+    _client = std::make_unique<zap::Client>(flags.port, flags.hostname);
+    _client->connect();
 }
 
 static std::unique_ptr<zap::abstract::Drawable> __attribute_maybe_unused__ _create_model(const std::string &obj_path)
@@ -34,5 +35,4 @@ void zappy::Application::init()
 void zappy::Application::update()
 {
     zap::abstract::GameEngine::update();
-    _client.send("HELLOOO");
 }

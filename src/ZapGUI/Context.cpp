@@ -46,12 +46,9 @@ void zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vecto
 
     try {
         __yield(engine.get());
-    } catch (const std::exception &e) {
+    } catch (const zap::exception::Error &e) {
         __cleanup();
-        if (dynamic_cast<const zap::exception::Error *>(&e)) {
-            throw e;
-        }
-        throw zap::exception::Error("An error occurred during the game loop: ", std::string(e.what()));
+        throw e;
     }
     __cleanup();
 }

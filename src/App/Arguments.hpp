@@ -15,7 +15,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace zappy {
+namespace parser {
 
 static constexpr int PORT_MIN = 0;
 static constexpr int PORT_MAX = 65535;
@@ -31,7 +31,7 @@ void version();
 [[nodiscard]] const Flags parse(const int argc, const char **argv);
 
 static const std::unordered_map<std::string, std::function<void()>> __meta_flags = {
-    {"-h",
+    {"-help",
         []() {
             usage();
             std::exit(SUCCESS);
@@ -55,4 +55,4 @@ static const std::unordered_map<std::string, std::function<void()>> __meta_flags
 
 static const std::regex ipv4_regex(R"(^(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}$)");
 
-}// namespace zappy
+}// namespace parser

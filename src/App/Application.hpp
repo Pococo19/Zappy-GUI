@@ -20,14 +20,14 @@ struct Planet {
 class Application final : public zap::abstract::GameEngine
 {
     public:
-        Application(const Flags &flags);
+        Application(const parser::Flags &flags);
         ~Application() override = default;
 
         void init() override;
         void update() override;
 
     private:
-        zap::Client _client;
+        std::unique_ptr<zap::Client> _client;
         std::string _serverResponse;
 };
 

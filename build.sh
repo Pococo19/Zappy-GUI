@@ -22,8 +22,10 @@ function _info()
     echo -e "${ORG}[🚧] RUNNING:\t${RST} ${ILC}$1${RST}"
 }
 
-function _all()
+function _base_run()
 {
+    local cmake_args = $1
+
     if ! { command -v cmake > /dev/null; } 2>&1; then
         _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
     fi
@@ -33,67 +35,34 @@ function _all()
     _success "updated external submodules !"
     mkdir -p build
     cd build || _error "mkdir failed"
-    cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-    # INFO: Epitech's moulinette does: `cmake --build .` but this is slow as fuc
-    if make -j"$(nproc)" zappy_gui; then
-        _success "compiled zappy_gui"
-        exit 0
+    cmake .. -G "Unix Makefiles" $cmake_args
+    if ! make -j"$(nproc)" zappy_gui; then
+        _error "compilation error" "failed to compile zappy_gui"
     fi
-    _error "compilation error" "failed to compile zappy_gui"
+    _success "compiled zappy_gui"
+}
+
+function _all()
+{
+    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=OFF -DENABLE_DEBUG=OFF"
+    exit 0
 }
 
 function _external()
 {
-    if ! { command -v cmake > /dev/null; } 2>&1; then
-        _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
-    fi
-    _success "command 'cmake' found, building..."
-    _info "updating external submodules..."
-    git submodule update --init --recursive
-    _success "updated external submodules !"
-    mkdir -p build
-    cd build || _error "mkdir failed"
-    cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=ON
-    # INFO: Epitech's moulinette does: `cmake --build .` but this is slow as fuc
-    if make -j"$(nproc)" zappy_gui; then
-        _success "compiled zappy_gui"
-        exit 0
-    fi
-    _error "compilation error" "failed to compile zappy_gui"
+    _base_run "-DCMAKE_BUILD_TYPE=Release -DENABLE_EXTERNAL=ON -DENABLE_DEBUG=OFF"
+    exit 0
 }
 
 function _debug()
 {
-    if ! { command -v cmake > /dev/null; } 2>&1; then
-        _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
-    fi
-    _success "command 'cmake' found, building..."
-    _info "updating external submodules..."
-    git submodule update --init --recursive
-    _success "updated external submodules !"
-    mkdir -p build
-    cd build || _error "mkdir failed"
-    cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DENABLE_DEBUG=ON
-    # INFO: Epitech's moulinette does: `cmake --build .` but this is slow as fuc
-    if make -j"$(nproc)" zappy_gui; then
-        _success "compiled zappy_gui"
-        exit 0
-    fi
-    _error "compilation error" "failed to compile zappy_gui"
+    _base_run "-DCMAKE_BUILD_TYPE=Debug -DENABLE_EXTERNAL=OFF -DENABLE_DEBUG=ON"
+    exit 0
 }
 
 function _tests_run()
 {
-    if ! { command -v cmake > /dev/null; } 2>&1; then
-        _error "command 'cmake' not found" "please install 'cmake' or 'nix develop' 🤓"
-    fi
-    _success "command 'cmake' found, building..."
-    mkdir -p build
-    cd build || _error "mkdir failed"
-    cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
-    if ! make -j"$(nproc)" unit_tests; then
-        _error "unit tests compilation error" "failed to compile unit_tests"
-    fi
+    _base_run "-DCMAKE_BUILD_TYPE=Debug -DENABLE_EXTERNAL=OFF -DENABLE_DEBUG=ON"
     cd .. || _error "cd failed"
     if ! ./unit_tests; then
         _error "unit tests error" "unit tests failed!"
@@ -106,17 +75,20 @@ function _tests_run()
         gcovr -r . --exclude tests/ > code_coverage.txt
     fi
     cat code_coverage.txt
+    exit 0
 }
 
 function _clean()
 {
     rm -rf build
+    exit 0
 }
 
 function _fclean()
 {
     _clean
     rm -rf zappy_gui unit_tests plugins code_coverage.txt unit_tests-*.profraw unit_tests.profdata vgcore* cmake-build-debug
+    exit 0
 }
 
 for args in "$@"
@@ -141,18 +113,15 @@ EOF
         ;;
     -c|--clean)
         _clean
-        exit 0
         ;;
     -f|--fclean)
         _fclean
-        exit 0
         ;;
     -d|--debug)
         _debug
         ;;
     -t|--tests)
         _tests_run
-        exit 0
         ;;
     -r|--re)
         _fclean
