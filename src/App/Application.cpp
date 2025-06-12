@@ -8,17 +8,17 @@
 #define ZAP_USE_RAYLIB_MATH
 #include <ZapGUI/Raylib.hpp>
 
+#include <App/Application.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Error.hpp>
-#include <App/Application.hpp>
 
 /**
 * public
 */
 
-zappy::Application::Application(zap::Client *client)
-    : _client(client)
+zappy::Application::Application(const parser::Flags &flags)
 {
+    _client = std::make_unique<zap::Client>(flags.port, flags.hostname);
     _client->connect();
 }
 
@@ -35,5 +35,4 @@ void zappy::Application::init()
 void zappy::Application::update()
 {
     zap::abstract::GameEngine::update();
-    _client->send("HELLOOO");
 }

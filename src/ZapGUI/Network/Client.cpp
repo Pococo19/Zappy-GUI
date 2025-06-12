@@ -5,35 +5,38 @@
 ** Client.cpp
 */
 
-#include "ZapGUI/Network/Client.hpp"
 #include <ZapGUI/Error.hpp>
+#include <ZapGUI/Logger.hpp>
+#include <ZapGUI/Network/Client.hpp>
 
-zap::Client::Client(int port, const std::string &ip)
-    : _port(port), _ip(ip), _sock(-1)
+#include <vector>
+
+zap::Client::Client(const u16 port, const std::string &ip) : _port(port), _ip(ip), _sock(-1)
 {
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock < 0) {
         throw exception::Error("Client::IP", "socket creation failed");
     }
-    _serverAddr.sin_family = AF_INET;
-    _serverAddr.sin_port = htons(static_cast<uint16_t>(_port));
+    _server_addr.sin_family = AF_INET;
+    _server_addr.sin_port = htons(static_cast<uint16_t>(_port));
 
-    if (inet_pton(AF_INET, _ip.c_str(), &_serverAddr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, _ip.c_str(), &_server_addr.sin_addr) <= 0) {
         throw exception::Error("Client::IP", "Invalid IP address");
     }
 }
 
 void zap::Client::connect()
 {
-    if (::connect(_sock, reinterpret_cast<sockaddr*>(&_serverAddr), sizeof(_serverAddr)) < 0) {
+    if (::connect(_sock, reinterpret_cast<sockaddr *>(&_server_addr), sizeof(_server_addr)) < 0) {
         throw exception::Error("Client::connect", "server connection failed");
     }
-    std::cout << "Connected to server." << std::endl;
+    logger::debug("Client::connect", "Connected to server at: ", _ip, ":", _port);
 }
 
-void zap::Client::send(const std::string& message)
+void zap::Client::send(const std::string &message)
 {
-    ssize_t sent = write(_sock, message.c_str(), message.size());
+    const ssize_t sent = write(_sock, message.c_str(), message.size());
+
     if (sent < 0) {
         throw exception::Error("Client::send", "server sending failed");
     }
@@ -42,12 +45,12 @@ void zap::Client::send(const std::string& message)
 std::string zap::Client::receive(size_t bufferSize)
 {
     std::vector<char> buffer(bufferSize, 0);
-    ssize_t bytesRead = read(_sock, buffer.data(), bufferSize - 1);
+    const ssize_t br = read(_sock, buffer.data(), bufferSize - 1);
 
-    if (bytesRead <= 0) {
+    if (br <= 0) {
         throw exception::Error("Client::receive", "server reception failed");
     }
-    return buffer.data() + std::to_string(bytesRead);
+    return buffer.data() + std::to_string(br);
 }
 
 void zap::Client::close()

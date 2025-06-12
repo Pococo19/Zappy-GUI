@@ -32,7 +32,7 @@ static void __yield(zap::abstract::GameEngine *engine)
     loop->run();
 }
 
-i32 zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vector2u &size, const std::string &title, const u32 max_framerate)
+void zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vector2u &size, const std::string &title, const u32 max_framerate)
 {
     _create_window_context(size, title, max_framerate);
 
@@ -43,14 +43,12 @@ i32 zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vector
     };
 
     std::unique_ptr<render::Loop> loop = std::make_unique<render::Loop>(engine.get());
-    
+
     try {
         __yield(engine.get());
-    } catch (const exception::Error &e) {
-        logger::error(e);
+    } catch (const zap::exception::Error &e) {
         __cleanup();
-        return ERROR;
+        throw e;
     }
     __cleanup();
-    return SUCCESS;
 }

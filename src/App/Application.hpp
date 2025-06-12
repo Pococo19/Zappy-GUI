@@ -8,6 +8,8 @@
 #include <ZapGUI/Engine/GameEngine.hpp>
 #include <ZapGUI/Network/Client.hpp>
 
+#include <App/Arguments.hpp>
+
 namespace zappy {
 
 struct Planet {
@@ -18,14 +20,14 @@ struct Planet {
 class Application final : public zap::abstract::GameEngine
 {
     public:
-        Application(zap::Client *client);
+        Application(const parser::Flags &flags);
         ~Application() override = default;
 
         void init() override;
         void update() override;
 
     private:
-        zap::Client *_client;
+        std::unique_ptr<zap::Client> _client;
         std::string _serverResponse;
 };
 
