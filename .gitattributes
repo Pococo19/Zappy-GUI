@@ -1,0 +1,5 @@
+*.frag linguist-language=glsl
+*.vert linguist-language=glsl
+*.cpp linguist-language=hpp
+*.hpp linguist-language=cpp
+.clang-format linguist-language=yaml
