@@ -159,7 +159,7 @@ void zap::abstract::ModelBase::_load_textures(const std::string &obj_file, const
     /** @brief texture binded to 0 -> means no texture */
     _texture.id = 0;
 
-    const std::string mtl_file = Filename::getPath(_get_mtl_file(obj_file));
+    const std::string mtl_file = _get_mtl_file(obj_file);
     const std::vector<MaterialInfo> materials = _parse_mtl_file(mtl_file, texture_directory);
 
     if (materials.empty()) {

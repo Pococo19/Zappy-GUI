@@ -19,7 +19,7 @@
 
 static std::shared_ptr<zap::ZapModel> _create_model(const std::string &obj_path, const Vector3 &position)
 {
-    auto model = std::make_shared<zap::ZapModel>(obj_path, "assets/textures/");
+    auto model = std::make_shared<zap::ZapModel>(obj_path, zap::Filename::getPath("assets/textures/"));
 
     model->setPosition(position);
     return model;
