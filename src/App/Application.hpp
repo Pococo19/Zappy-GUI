@@ -6,7 +6,7 @@
 */
 
 #include <ZapGUI/Engine/GameEngine.hpp>
-#include <ZapGUI/Network/Client.hpp>
+#include <ZapGUI/Network/NetworkClient.hpp>
 
 #include <App/Arguments.hpp>
 
@@ -27,7 +27,7 @@ class Application final : public zap::abstract::GameEngine
         void update() override;
 
     private:
-        std::unique_ptr<zap::Client> _client;
+        std::unique_ptr<zap::NetworkClient> _net;
         std::string _serverResponse;
 };
 

@@ -18,8 +18,7 @@
 
 zappy::Application::Application(const parser::Flags &flags)
 {
-    _client = std::make_unique<zap::Client>(flags.port, flags.hostname);
-    _client->connect();
+    _net = std::make_unique<zap::NetworkClient>(flags.port, flags.hostname);
 }
 
 void zappy::Application::init()
