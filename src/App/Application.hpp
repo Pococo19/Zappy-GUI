@@ -6,6 +6,8 @@
 */
 
 #include <ZapGUI/Engine/GameEngine.hpp>
+#include <ZapGUI/Network/Command/CommandDispatcher.hpp>
+#include <ZapGUI/Network/Command/CommandFactory.hpp>
 #include <ZapGUI/Network/NetworkClient.hpp>
 
 #include <App/Arguments.hpp>
@@ -30,6 +32,9 @@ class Application final : public zap::abstract::GameEngine
     private:
         std::unique_ptr<zap::NetworkClient> _net;
         std::thread _net_thread;
+
+        zap::network::CommandFactory _factory;
+        zap::network::CommandDispatcher _dispatcher;
 };
 
 std::shared_ptr<zap::render::Scene> _create_main_scene();

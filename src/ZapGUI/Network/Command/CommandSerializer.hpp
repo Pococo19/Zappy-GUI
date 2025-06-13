@@ -9,7 +9,7 @@
 
 #include <ZapGUI/Network/Command/ICommand.hpp>
 
-namespace zap::protocol {
+namespace zap::network {
 
 class CommandSerializer
 {
@@ -17,4 +17,4 @@ class CommandSerializer
         static std::string serialize(const ICommand &cmd);
 };
 
-}// namespace zap::protocol
+}// namespace zap::network

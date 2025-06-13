@@ -9,11 +9,11 @@
 
 #include <string>
 
-namespace zap::protocol {
+namespace zap::network {
 
 struct ICommand {
         virtual ~ICommand() = default;
         virtual std::string name() const = 0;
 };
 
-}// namespace zap::protocol
+}// namespace zap::network

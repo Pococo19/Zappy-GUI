@@ -14,16 +14,19 @@
 #include <regex>
 #include <unordered_map>
 
-namespace zap::protocol {
+namespace zap::network {
 
 class CommandFactory
 {
     public:
+        using ParserFn = std::function<std::unique_ptr<ICommand>(const std::vector<std::string> &)>;
+
+        void add(const std::string &pattern, ParserFn parser);
+
         std::unique_ptr<ICommand> parse(const std::string &command) const;
 
     private:
-        using ParserFn = std::function<std::unique_ptr<ICommand>(const std::smatch &)>;
         std::unordered_map<std::string, ParserFn> _parsers;
 };
 
-}// namespace zap::protocol
+}// namespace zap::network

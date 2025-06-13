@@ -5,6 +5,8 @@
 ** Application.cpp
 */
 
+#include "App/Protocol/MapSize.hpp"
+#include "ZapGUI/Error.hpp"
 #include <App/Application.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Event/EventCallback.hpp>
@@ -29,6 +31,18 @@ zappy::Application::Application(const parser::Flags &flags)
         }
     });
     zap::event::EventCallback::getInstance().add(KEY_ESCAPE, [&]() { _net->stop(); });
+
+    _factory.add("msz", [](const std::vector<std::string> &tokens) -> std::unique_ptr<zap::network::ICommand> {
+        if (tokens.size() != 3) {
+            throw zap::exception::Error("Application::Application", "msz expects 2 arguments");
+        }
+        auto cmd = std::make_unique<protocol::MapSizeCommand>();
+
+        cmd->width = std::stoi(tokens[1]);
+        cmd->height = std::stoi(tokens[2]);
+        return cmd;
+    });
+    _dispatcher.on<protocol::MapSizeCommand>([&](const protocol::MapSizeCommand &cmd) { zap::logger::debug("Map size: ", cmd.width, " x ", cmd.height); });
 }
 
 zappy::Application::~Application()
