@@ -28,7 +28,7 @@ class NetworkClient final
         void set_line_callback(std::function<void(std::string)> cb);
 
     private:
-        void do_read();
+        void receive();
 
         i32 _socket;
         std::string _buffer;
