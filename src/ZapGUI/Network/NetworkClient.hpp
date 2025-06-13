@@ -9,6 +9,7 @@
 
 #include <ZapGUI/Types.hpp>
 
+#include <atomic>
 #include <functional>
 #include <string>
 
@@ -24,6 +25,7 @@ class NetworkClient final
         ~NetworkClient();
 
         void start();
+        void stop();
         void send(const std::string &data);
         void set_line_callback(std::function<void(std::string)> cb);
 
@@ -33,6 +35,7 @@ class NetworkClient final
         i32 _socket;
         std::string _buffer;
         std::function<void(std::string)> _line_cb;
+        std::atomic<bool> _running{true};
 };
 
 }// namespace zap

@@ -32,13 +32,20 @@ void zap::NetworkClient::set_line_callback(std::function<void(std::string)> cb)
 
 void zap::NetworkClient::start()
 {
-    while (true) {
+    _running = true;
+
+    while (_running) {
         const struct timeval timeout = {0, ZAP_NETWORK_CLIENT_TIMEOUT};
 
         if (network::select(_socket, timeout)) {
             this->receive();
         }
     }
+}
+
+void zap::NetworkClient::stop()
+{
+    _running = false;
 }
 
 void zap::NetworkClient::receive()
@@ -50,6 +57,8 @@ void zap::NetworkClient::receive()
     }
 
     size_t pos;
+
+    _buffer += buffer;
 
     while ((pos = _buffer.find('\n')) != std::string::npos) {
         const std::string line = _buffer.substr(0, pos);
