@@ -12,7 +12,7 @@
 * public
 */
 
-zap::NetworkClient::NetworkClient(const u16 port, const std::string &ip) : _socket(-1), _buffer(), _line_cb(nullptr)
+zap::NetworkClient::NetworkClient(const u16 port, const std::string &ip) : _socket(-1), _buffer(), _callback(nullptr)
 {
     _socket = network::socket();
     network::connect(_socket, port, ip);
@@ -25,9 +25,9 @@ zap::NetworkClient::~NetworkClient()
     }
 }
 
-void zap::NetworkClient::set_line_callback(std::function<void(std::string)> cb)
+void zap::NetworkClient::setCallback(Callback cb)
 {
-    _line_cb = std::move(cb);
+    _callback = std::move(cb);
 }
 
 void zap::NetworkClient::start()
@@ -48,6 +48,23 @@ void zap::NetworkClient::stop()
     _running = false;
 }
 
+void zap::NetworkClient::send(const std::string &message)
+{
+    if (message.empty()) {
+        return;
+    }
+
+    const ssize_t written = network::write(_socket, message);
+
+    if (written < 0) {
+        throw exception::Error("NetworkClient::send", "Failed to send data: ", message, " with error code: ", std::to_string(errno));
+    }
+}
+
+/**
+* private
+*/
+
 void zap::NetworkClient::receive()
 {
     char buffer[ZAP_NETWORK_CLIENT_BUFFER_SIZE];
@@ -64,21 +81,9 @@ void zap::NetworkClient::receive()
         const std::string line = _buffer.substr(0, pos);
 
         _buffer.erase(0, pos + 1);
-        if (_line_cb) {
-            _line_cb(line);
+
+        if (_callback) {
+            _callback(line);
         }
-    }
-}
-
-void zap::NetworkClient::send(const std::string &message)
-{
-    if (message.empty()) {
-        return;
-    }
-
-    const ssize_t written = network::write(_socket, message);
-
-    if (written < 0) {
-        throw exception::Error("NetworkClient::send", "Failed to send data: ", message, " with error code: ", std::to_string(errno));
     }
 }

@@ -24,17 +24,19 @@ class NetworkClient final
         explicit NetworkClient(const u16 port, const std::string &ip);
         ~NetworkClient();
 
+        using Callback = std::function<void(std::string)>;
+
         void start();
         void stop();
         void send(const std::string &data);
-        void set_line_callback(std::function<void(std::string)> cb);
+        void setCallback(Callback cb);
 
     private:
         void receive();
 
         i32 _socket;
         std::string _buffer;
-        std::function<void(std::string)> _line_cb;
+        Callback _callback;
         std::atomic<bool> _running{true};
 };
 
