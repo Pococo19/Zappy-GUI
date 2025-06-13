@@ -9,6 +9,7 @@
 #include <ZapGUI/Network/NetworkClient.hpp>
 
 #include <App/Arguments.hpp>
+#include <thread>
 
 namespace zappy {
 
@@ -21,14 +22,14 @@ class Application final : public zap::abstract::GameEngine
 {
     public:
         Application(const parser::Flags &flags);
-        ~Application() override = default;
+        ~Application() override;
 
         void init() override;
         void update() override;
 
     private:
         std::unique_ptr<zap::NetworkClient> _net;
-        std::string _serverResponse;
+        std::thread _net_thread;
 };
 
 std::shared_ptr<zap::render::Scene> _create_main_scene();
