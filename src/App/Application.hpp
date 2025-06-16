@@ -5,6 +5,8 @@
 ** Application.hpp
 */
 
+#pragma once
+
 #include <App/Arguments.hpp>
 #include <App/Protocol/Protocol.hpp>
 
