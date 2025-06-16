@@ -17,6 +17,62 @@
 #include <cmath>
 #include <random>
 
+/**
+ * private struct, attributes and constants
+ */
+// clang-format off
+
+struct Planet {
+        f32 radius;
+        Vector3 position;
+        std::shared_ptr<zap::abstract::Drawable> model;
+};
+
+static std::vector<Vector3> __positions;
+
+static const std::vector<std::string> _tree_models = {
+    zap::Filename::getPath("assets/models/CommonTree_1.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_2.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_3.obj"),
+    zap::Filename::getPath("assets/models/CommonTree_4.obj"),
+};
+
+static const std::vector<std::string> _flower_models = {
+    zap::Filename::getPath("assets/models/Flower_3_Group.obj"),
+    zap::Filename::getPath("assets/models/Flower_4_Group.obj"),
+    zap::Filename::getPath("assets/models/Mushroom_Common.obj"),
+    zap::Filename::getPath("assets/models/Mushroom_Laetiporus.obj"),
+    zap::Filename::getPath("assets/models/Grass_Common_Tall.obj"),
+    zap::Filename::getPath("assets/models/Grass_Common_Short.obj"),
+    zap::Filename::getPath("assets/models/Grass_Wispy_Tall.obj"),
+    zap::Filename::getPath("assets/models/Grass_Wispy_Short.obj")
+};
+
+constexpr f32 MIN_DISTANCE = 2.0f;
+constexpr u32 MAX_ATTEMPTS = 100;
+
+// clang-format on
+/**
+ * private functions
+ */
+
+static Planet _create_planet(const zappy::protocol::GUI_Map &map)
+{
+    if (map.empty() || map.front().empty()) {
+        throw zap::exception::Error("CreatePlanet", "Map is empty or malformed (rows or columns are 0)");
+    }
+    constexpr f32 radius = 10.0f;
+    constexpr Vector3 position = {0.0f, 0.0f, 0.0f};
+    const Mesh sphere = GenMeshSphere(radius, 64, 64);
+    const Model model = LoadModelFromMesh(sphere);
+    auto planet_model = std::make_shared<zap::ZapModel>(model);
+
+    planet_model->setPosition(position);
+    planet_model->setTint(LIME);
+
+    return Planet{.radius = radius, .position = position, .model = std::move(planet_model)};
+}
+//
 // static std::shared_ptr<zap::ZapModel> _create_model(const std::string &obj_path, const Vector3 &position)
 // {
 //     auto model = std::make_shared<zap::ZapModel>(obj_path, zap::Filename::getPath("assets/textures/"));
@@ -24,17 +80,6 @@
 //     model->setPosition(position);
 //     return model;
 // }
-//
-static std::shared_ptr<zap::abstract::Drawable> _create_planet(const zappy::Planet &planet)
-{
-    const Mesh sphere = GenMeshSphere(planet._radius, 32, 32);
-    const Model model = LoadModelFromMesh(sphere);
-    auto p_model = std::make_shared<zap::ZapModel>(model);
-
-    p_model->setPosition(planet._position);
-    p_model->setTint(LIME);
-    return p_model;
-}
 //
 // static i32 _get_random_between(const i32 min, const i32 max)
 // {
@@ -46,8 +91,6 @@ static std::shared_ptr<zap::abstract::Drawable> _create_planet(const zappy::Plan
 //     return dis(gen);
 // }
 //
-static std::vector<Vector3> __positions;
-//
 // static inline bool _is_position_too_close(const Vector3 &new_pos, f32 min_distance)
 // {
 //     for (const auto &existing_pos : __positions) {
@@ -58,11 +101,8 @@ static std::vector<Vector3> __positions;
 //     return false;
 // }
 
-// static void _seed_models_around_planet(std::shared_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const zappy::Planet &planet, u32 count)
+// static void _seed_models_around_planet(std::shared_ptr<zap::render::Scene> &scene, const std::vector<std::string> &obj_paths, const Planet &planet, u32 count)
 // {
-//     constexpr f32 MIN_DISTANCE = 2.0f;
-//     constexpr u32 MAX_ATTEMPTS = 100;
-//
 //     for (u32 i = 0; i < count; ++i) {
 //         Vector3 pos;
 //         Vector3 center;
@@ -71,8 +111,8 @@ static std::vector<Vector3> __positions;
 //         for (u32 attempt = 0; attempt < MAX_ATTEMPTS; ++attempt) {
 //             const f32 theta = static_cast<f32>(M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));    //<< 0 to π
 //             const f32 phi = static_cast<f32>(2.0 * M_PI * (std::rand() / static_cast<f64>(RAND_MAX)));//<< 0 to 2π
-//             const f32 radius = planet._radius;
-//             center = planet._position;
+//             const f32 radius = planet.radius;
+//             center = planet.position;
 //
 //             pos = {radius * sinf(theta) * cosf(phi), radius * cosf(theta), radius * sinf(theta) * sinf(phi)};
 //             pos = Vector3Add(center, pos);
@@ -89,7 +129,7 @@ static std::vector<Vector3> __positions;
 //
 //         __positions.push_back(pos);
 //
-//         auto obj = _create_model(obj_paths[static_cast<u32>(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
+//         const auto obj = _create_model(obj_paths[static_cast<u32>(_get_random_between(0, static_cast<i32>(obj_paths.size() - 1)))], pos);
 //
 //         const Vector3 normal = Vector3Normalize(Vector3Subtract(pos, center));
 //         constexpr Vector3 up = {0, 1, 0};
@@ -109,34 +149,20 @@ static inline void _clear_positions()
     __positions.clear();
 }
 
-// clang-format off
-static const std::vector<std::string> _tree_models = {
-    zap::Filename::getPath("assets/models/CommonTree_1.obj"),
-    zap::Filename::getPath("assets/models/CommonTree_2.obj"),
-    zap::Filename::getPath("assets/models/CommonTree_3.obj"),
-    zap::Filename::getPath("assets/models/CommonTree_4.obj"),
-};
+/**
+* public entry-point
+*/
 
-static const std::vector<std::string> _flower_models = {
-    zap::Filename::getPath("assets/models/Flower_3_Group.obj"),
-    zap::Filename::getPath("assets/models/Flower_4_Group.obj"),
-    zap::Filename::getPath("assets/models/Mushroom_Common.obj"),
-    zap::Filename::getPath("assets/models/Mushroom_Laetiporus.obj"),
-    zap::Filename::getPath("assets/models/Grass_Common_Tall.obj"),
-    zap::Filename::getPath("assets/models/Grass_Common_Short.obj"),
-    zap::Filename::getPath("assets/models/Grass_Wispy_Tall.obj"),
-    zap::Filename::getPath("assets/models/Grass_Wispy_Short.obj")
-};
-// clang-format on
-
-std::shared_ptr<zap::render::Scene> zappy::_create_main_scene()
+std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GUI_Map &map)
 {
+    std::cerr << "MAP SIZE (rows): " << map.size() << ", cols: " << (map.empty() ? 0 : map.front().size()) << std::endl;
+
     _clear_positions();
 
     auto scene = std::make_shared<zap::render::Scene>();
-    constexpr zappy::Planet planet = {{25, 0, 25}, 15.0f};
+    const auto planet = _create_planet(map);
 
-    scene->add(_create_planet(planet));
+    scene->add(planet.model);
     // _seed_models_around_planet(scene, _tree_models, planet, 10);
     // _seed_models_around_planet(scene, _flower_models, planet, 50);
     scene->add(std::make_shared<zap::ZapCamera>());

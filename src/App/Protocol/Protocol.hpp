@@ -21,10 +21,6 @@
 
 namespace zappy::protocol {
 
-using ParserFunc = std::function<void(const std::string &)>;
-
-static std::unordered_map<std::string, ParserFunc> _callbacks;
-
 // clang-format off
 enum RessourceType {
     UNKNOWN = -1,
@@ -65,11 +61,22 @@ const std::vector<T> parse(const std::string_view line, const u32 expected_count
     return result;
 }
 
-static std::vector<std::vector<std::array<protocol::Ressource, 7>>> _map;
+using GUI_Map = std::vector<std::vector<std::array<Ressource, 7>>>;
+using ParserFunc = std::function<void(const std::string &)>;
 
-static std::thread _network_thread;
+extern bool _ready;
+extern GUI_Map _map;
+static inline std::unordered_map<std::string, ParserFunc> _callbacks;
+static inline std::thread _network_thread;
+
+#define await                                                                                                                                                            \
+    while (!zappy::protocol::_ready) {                                                                                                                                   \
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));                                                                                                      \
+    }
 
 void init(std::shared_ptr<zap::NetworkClient> client);
 void stop();
+
+GUI_Map getMap();
 
 }// namespace zappy::protocol

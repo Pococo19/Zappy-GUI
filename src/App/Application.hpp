@@ -13,11 +13,6 @@
 
 namespace zappy {
 
-struct Planet {
-        Vector3 _position;
-        f32 _radius;
-};
-
 class Application final : public zap::abstract::GameEngine
 {
     public:
@@ -33,6 +28,6 @@ class Application final : public zap::abstract::GameEngine
         void _init_network();
 };
 
-std::shared_ptr<zap::render::Scene> _create_main_scene();
+std::shared_ptr<zap::render::Scene> _create_main_scene(const protocol::GUI_Map &map);
 
 }// namespace zappy

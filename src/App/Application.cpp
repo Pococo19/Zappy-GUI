@@ -35,7 +35,16 @@ zappy::Application::~Application()
 
 void zappy::Application::init()
 {
-    // addScene("main", _create_main_scene(protocol::_map));
+    await const auto map = protocol::getMap();
+
+    // Double-check that the map is not empty
+    if (map.empty() || map.front().empty()) {
+        throw zap::exception::Error("Application::init", "Map is empty after protocol initialization");
+    }
+
+    zap::logger::debug("Map retrieved successfully. Size: ", map.size(), "x", map[0].size());
+
+    addScene("main", _create_main_scene(map));
 }
 
 void zappy::Application::update()

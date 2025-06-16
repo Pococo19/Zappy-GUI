@@ -6,15 +6,30 @@
 */
 
 #include <App/Protocol/Protocol.hpp>
-#include <ZapGUI/Logger.hpp>
-
 #include <ZapGUI/Error.hpp>
+#include <ZapGUI/Logger.hpp>
+#include <mutex>
+
+static inline u32 _max_tiles = 0;
+static inline u32 _received_tiles = 0;
+static std::mutex _map_mutex;// Add mutex for thread safety
+
+bool zappy::protocol::_ready = false;
+zappy::protocol::GUI_Map zappy::protocol::_map;// Define the map here instead of header
 
 void zappy::protocol::stop()
 {
     if (_network_thread.joinable()) {
         _network_thread.join();
     }
+}
+
+// Add function to safely get the map
+zappy::protocol::GUI_Map zappy::protocol::getMap()
+{
+    std::lock_guard<std::mutex> lock(_map_mutex);
+
+    return _map;
 }
 
 /**
@@ -24,6 +39,7 @@ void zappy::protocol::stop()
 void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
 {
     _callbacks.clear();
+
     // clang-format off
     /**
     * @brief WELCOME -> GRAPHIC
@@ -39,7 +55,18 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
     protocol::_callbacks.insert({"msz", [](const std::string &data) -> void
     {
         const auto size = protocol::parse<u32>(data, 3);
-        _map = std::vector<std::vector<std::array<protocol::Ressource, 7>>>(size.front(), std::vector<std::array<protocol::Ressource, 7>>(size.back()));
+        const u32 width = size[0];
+        const u32 height = size[1];
+
+        zap::logger::debug("Initializing map with dimensions: ", width, "x", height);
+
+        std::lock_guard<std::mutex> lock(_map_mutex);
+        _map = std::vector<std::vector<std::array<protocol::Ressource, 7>>>(height, std::vector<std::array<protocol::Ressource, 7>>(width));
+        _received_tiles = 0;
+        _max_tiles = width * height;
+        _ready = false;  // Ensure ready is false while loading
+
+        zap::logger::debug("Map initialized, expecting ", _max_tiles, " tiles");
     }});
 
     /**
@@ -50,22 +77,39 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         const auto params = protocol::parse<u32>(data, 9);
 
         if (params.size() < 9) {
-            throw zap::exception::Error("BCT", "Invalid number of parameters in bct command: ", params.size(), " expected 7");
+            throw zap::exception::Error("BCT", "Invalid number of parameters");
         }
 
         const u32 x = params[0];
         const u32 y = params[1];
-        std::array<protocol::Ressource, 7> ressources = {};
 
+        std::array<protocol::Ressource, 7> ressources = {};
         for (u8 i = 0; i < 7; ++i) {
             ressources[i].type = static_cast<protocol::RessourceType>(i);
             ressources[i].quantity = params[i + 2];
         }
 
-        if (x < _map.size() && y < _map[x].size()) {
-            _map[x][y] = ressources;
-        } else {
-            throw zap::exception::Error("BCT", "Coordinates out of bounds in bct command");
+        {
+            std::lock_guard<std::mutex> lock(_map_mutex);
+            
+            if (_map.empty()) {
+                throw zap::exception::Error("BCT", "Map is not initialized yet. Please ensure 'msz' command was received before 'bct'.");
+            }
+            
+            if (y >= _map.size() || x >= _map[y].size()) {
+                throw zap::exception::Error("BCT", "Coordinates out of bounds: x=", x, ", y=", y, ", map_height=", _map.size(), ", map_width=", _map.empty() ? 0 : _map[0].size());
+            }
+
+            _map[y][x] = ressources;
+            ++_received_tiles;
+        }
+
+        zap::logger::recv("Received tile ", _received_tiles, "/", _max_tiles);
+
+        if (_received_tiles == _max_tiles) {
+            std::lock_guard<std::mutex> lock(_map_mutex);
+            zap::logger::debug("All tiles received, map is ready! Map size: ", _map.size(), "x", (_map.empty() ? 0 : _map[0].size()));
+            protocol::_ready = true;
         }
     }});
 
@@ -77,10 +121,9 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         const std::string cmd = line.substr(0, line.find(' '));
 
         if (protocol::_callbacks.contains(cmd)) {
-            zap::logger::recv(cmd);
             const std::string line_without_cmd = std::string(line).substr(cmd.size());
 
-            if (protocol::_callbacks.find(cmd) == protocol::_callbacks.end()) {
+            if (!protocol::_callbacks.contains(cmd)) {
                 throw zap::exception::Error("Protocol", "No callback registered for command: ", cmd);
             }
 
