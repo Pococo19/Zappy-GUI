@@ -37,6 +37,8 @@ struct Ressource {
     RessourceType type = UNKNOWN;
     u32 quantity = 0;
 };
+
+#define MAX_RESSOURCES 7
 // clang-format on
 
 template<typename T>
