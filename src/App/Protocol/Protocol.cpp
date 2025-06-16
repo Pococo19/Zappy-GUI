@@ -6,25 +6,35 @@
 */
 
 #include <App/Protocol/Protocol.hpp>
+
 #include <ZapGUI/Error.hpp>
 #include <ZapGUI/Logger.hpp>
-#include <mutex>
+#include <ZapGUI/Threads.hpp>
+
+/**
+ * async function to run the client in a separate thread
+ */
+
+async(run_client, std::shared_ptr<zap::NetworkClient> net)
+{
+    net->start();
+}
+
+/**
+ * private thread-safe declarations
+ */
 
 static inline u32 _max_tiles = 0;
 static inline u32 _received_tiles = 0;
-static std::mutex _map_mutex;// Add mutex for thread safety
+static inline std::mutex _map_mutex;
 
 bool zappy::protocol::_ready = false;
-zappy::protocol::GUI_Map zappy::protocol::_map;// Define the map here instead of header
+zappy::protocol::GUI_Map zappy::protocol::_map;
 
-void zappy::protocol::stop()
-{
-    if (_network_thread.joinable()) {
-        _network_thread.join();
-    }
-}
+/**
+ * protocol functions
+ */
 
-// Add function to safely get the map
 zappy::protocol::GUI_Map zappy::protocol::getMap()
 {
     std::lock_guard<std::mutex> lock(_map_mutex);
@@ -64,7 +74,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         _map = std::vector<std::vector<std::array<protocol::Ressource, 7>>>(height, std::vector<std::array<protocol::Ressource, 7>>(width));
         _received_tiles = 0;
         _max_tiles = width * height;
-        _ready = false;  // Ensure ready is false while loading
+        _ready = false;
 
         zap::logger::debug("Map initialized, expecting ", _max_tiles, " tiles");
     }});
@@ -132,6 +142,5 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
     });
     // clang-format on
 
-    stop();
-    _network_thread = std::thread([net]() { net->start(); });
+    run_client(net);//<< async function to run the client in a separate thread;
 }

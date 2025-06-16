@@ -67,7 +67,6 @@ using ParserFunc = std::function<void(const std::string &)>;
 extern bool _ready;
 extern GUI_Map _map;
 static inline std::unordered_map<std::string, ParserFunc> _callbacks;
-static inline std::thread _network_thread;
 
 #define await                                                                                                                                                            \
     while (!zappy::protocol::_ready) {                                                                                                                                   \
@@ -75,7 +74,6 @@ static inline std::thread _network_thread;
     }
 
 void init(std::shared_ptr<zap::NetworkClient> client);
-void stop();
 
 GUI_Map getMap();
 

@@ -12,8 +12,6 @@
 #include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Logger.hpp>
 
-#include <thread>
-
 /**
 * public
 */
@@ -29,7 +27,6 @@ zappy::Application::~Application()
     if (_net) {
         _net->stop();
     }
-    protocol::stop();
     zap::logger::debug("Application destroyed");
 }
 
@@ -37,7 +34,6 @@ void zappy::Application::init()
 {
     await const auto map = protocol::getMap();
 
-    // Double-check that the map is not empty
     if (map.empty() || map.front().empty()) {
         throw zap::exception::Error("Application::init", "Map is empty after protocol initialization");
     }
