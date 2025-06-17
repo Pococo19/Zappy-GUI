@@ -5,26 +5,32 @@
 ** Context.cpp
 */
 
+#define ZAP_USE_RAYLIB_RLGL
+#include <ZapGUI/Raylib.hpp>
+
 #include <ZapGUI/Context.hpp>
 #include <ZapGUI/Error.hpp>
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Macro.hpp>
-#include <ZapGUI/Raylib.hpp>
 #include <ZapGUI/Render/Loop.hpp>
 
 /**
 * public entry point
 */
 
-static void _create_window_context(const Vector2u &size, const std::string &title, const u32 max_framerate)
+static inline void _create_window_context(const Vector2u &size, const std::string &title, const u32 max_framerate)
 {
+#if !defined(DEBUG)
+    SetTraceLogLevel(LOG_NONE);
+#endif
+
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(static_cast<i32>(size._x), static_cast<i32>(size._y), title.c_str());
     SetTargetFPS(static_cast<i32>(max_framerate));
     DisableCursor();
 }
 
-static void __yield(zap::abstract::GameEngine *engine)
+static inline void _yield(zap::abstract::GameEngine *engine)
 {
     std::unique_ptr<zap::render::Loop> loop = std::make_unique<zap::render::Loop>(engine);
 
@@ -36,7 +42,7 @@ void zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vecto
 {
     _create_window_context(size, title, max_framerate);
 
-    static const auto __cleanup = [&]() {
+    static const auto _cleanup = [&engine]() {
         engine->shutdown();
         engine.reset();
         CloseWindow();
@@ -45,10 +51,10 @@ void zap::context::run(std::unique_ptr<abstract::GameEngine> engine, const Vecto
     std::unique_ptr<render::Loop> loop = std::make_unique<render::Loop>(engine.get());
 
     try {
-        __yield(engine.get());
+        _yield(engine.get());
     } catch (const zap::exception::Error &e) {
-        __cleanup();
+        _cleanup();
         throw e;
     }
-    __cleanup();
+    _cleanup();
 }
