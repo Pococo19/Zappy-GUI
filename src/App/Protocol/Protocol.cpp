@@ -71,7 +71,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         zap::logger::debug("Initializing map with dimensions: ", width, "x", height);
 
         std::lock_guard<std::mutex> lock(_map_mutex);
-        _map = std::vector<std::vector<std::array<protocol::Ressource, 7>>>(height, std::vector<std::array<protocol::Ressource, 7>>(width));
+        _map = std::vector<std::vector<std::array<protocol::Resource, 7>>>(height, std::vector<std::array<protocol::Resource, 7>>(width));
         _received_tiles = 0;
         _max_tiles = width * height;
         _ready = false;
@@ -93,10 +93,10 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         const u32 x = params[0];
         const u32 y = params[1];
 
-        std::array<protocol::Ressource, 7> ressources = {};
+        std::array<protocol::Resource, 7> resources = {};
         for (u8 i = 0; i < 7; ++i) {
-            ressources[i].type = static_cast<protocol::RessourceType>(i);
-            ressources[i].quantity = params[i + 2];
+            resources[i].type = static_cast<protocol::ResourceType>(i);
+            resources[i].quantity = params[i + 2];
         }
 
         {
@@ -110,7 +110,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
                 throw zap::exception::Error("BCT", "Coordinates out of bounds: x=", x, ", y=", y, ", map_height=", _map.size(), ", map_width=", _map.empty() ? 0 : _map[0].size());
             }
 
-            _map[y][x] = ressources;
+            _map[y][x] = resources;
             ++_received_tiles;
         }
 

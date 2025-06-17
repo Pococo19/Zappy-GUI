@@ -10,19 +10,19 @@
 #include <ZapGUI/Network/NetworkClient.hpp>
 #include <ZapGUI/Types.hpp>
 
+#include <bits/this_thread_sleep.h>
 #include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <unordered_map>
 #include <vector>
 
 namespace zappy::protocol {
 
 // clang-format off
-enum RessourceType {
+enum ResourceType {
     UNKNOWN = -1,
     FOOD = 0,
     LINEMATE = 1,
@@ -33,12 +33,12 @@ enum RessourceType {
     THYSTAME = 6
 };
 
-struct Ressource {
-    RessourceType type = UNKNOWN;
+struct Resource {
+    ResourceType type = UNKNOWN;
     u32 quantity = 0;
 };
 
-#define MAX_RESSOURCES 7
+#define MAX_ResourceS 7
 // clang-format on
 
 template<typename T>
@@ -63,13 +63,17 @@ const std::vector<T> parse(const std::string_view line, const u32 expected_count
     return result;
 }
 
-using GUI_Map = std::vector<std::vector<std::array<Ressource, 7>>>;
+using GUI_Map = std::vector<std::vector<std::array<Resource, 7>>>;
 using ParserFunc = std::function<void(const std::string &)>;
 
 extern bool _ready;
 extern GUI_Map _map;
 static inline std::unordered_map<std::string, ParserFunc> _callbacks;
 
+#if defined(await)
+    #pragma message("`await` macro is already defined, re-defining it.")
+    #undef await
+#endif
 #define await                                                                                                                                                            \
     while (!zappy::protocol::_ready) {                                                                                                                                   \
         std::this_thread::sleep_for(std::chrono::milliseconds(10));                                                                                                      \
