@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <thread>
+
 #ifdef async
     #pragma message("async macro already defined, undefining it")
     #undef async

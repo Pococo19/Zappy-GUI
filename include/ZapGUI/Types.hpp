@@ -24,3 +24,8 @@ struct Vector2u {
         u32 _x;
         u32 _y;
 };
+
+struct Vector2f {
+        f32 _x;
+        f32 _y;
+};

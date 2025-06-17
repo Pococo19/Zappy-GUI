@@ -23,6 +23,9 @@
 #if defined ZAP_USE_RAYLIB_MATH
 #include <raymath.h>
 #endif
+#if defined ZAP_USE_GLFW
+#include <raylib/src/external/glfw/include/GLFW/glfw3.h>
+#endif
 #if defined ZAP_USE_RAYLIB_RLGL
 #include <raylib/src/rlgl.h>
 #endif
