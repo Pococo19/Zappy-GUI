@@ -20,7 +20,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          bash scripts/dependencies.sh
+          bash script/dependencies.sh
 
       - name: Build the project
         run: ./build.sh
