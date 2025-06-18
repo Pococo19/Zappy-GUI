@@ -5,6 +5,7 @@
 ** Rocks.cpp
 */
 
+#include "ZapGUI/Threads.hpp"
 #include <App/Maths/Maths.hpp>
 #include <App/Seed/Create.hpp>
 
@@ -22,32 +23,35 @@ static const std::vector<std::string> _rocks_models = {
     zap::Filename::getPath("assets/models/Pebble_Square_6.obj"),
 };
 
-static constexpr Color _get_tint(const zappy::protocol::ResourceType type)
-{
-    switch (type) {
-        case zappy::protocol::ResourceType::FOOD:
-            return BROWN;
-        case zappy::protocol::ResourceType::LINEMATE:
-            return BLUE;
-        case zappy::protocol::ResourceType::DERAUMERE:
-            return RED;
-        case zappy::protocol::ResourceType::SIBUR:
-            return GREEN;
-        case zappy::protocol::ResourceType::MENDIANE:
-            return PURPLE;
-        case zappy::protocol::ResourceType::PHIRAS:
-            return ORANGE;
-        case zappy::protocol::ResourceType::THYSTAME:
-            return YELLOW;
-        default:
-            return WHITE;
-    }
-}
+// static constexpr Color _get_tint(const zappy::protocol::ResourceType type)
+// {
+//     switch (type) {
+//         case zappy::protocol::ResourceType::FOOD:
+//             return BROWN;
+//         case zappy::protocol::ResourceType::LINEMATE:
+//             return BLUE;
+//         case zappy::protocol::ResourceType::DERAUMERE:
+//             return RED;
+//         case zappy::protocol::ResourceType::SIBUR:
+//             return GREEN;
+//         case zappy::protocol::ResourceType::MENDIANE:
+//             return PURPLE;
+//         case zappy::protocol::ResourceType::PHIRAS:
+//             return ORANGE;
+//         case zappy::protocol::ResourceType::THYSTAME:
+//             return YELLOW;
+//         default:
+//             return WHITE;
+//     }
+// }
 
 static void _push_resource(const zappy::protocol::Resource &resource, std::shared_ptr<zap::render::Scene> &out_scene, const Vector3 &position)
 {
     constexpr u64 size = sizeof(_rocks_models) / sizeof(_rocks_models[0]);
     constexpr f32 offset_range = 0.02f;// << small offset to keep resources within tile bounds
+    constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
+    constexpr Vector3 up = {0.0f, 1.0f, 0.0f};
+    constexpr f32 scale = 0.6f;
 
     for (u32 instance = 0; instance < resource.quantity; ++instance) {
         const f32 random_x = zappy::maths::random<f32>(-offset_range, offset_range);
@@ -58,8 +62,16 @@ static void _push_resource(const zappy::protocol::Resource &resource, std::share
 
         const auto model = zappy::create::model(_rocks_models[static_cast<u32>(zappy::maths::random(0, static_cast<i32>(size)))], final_position);
 
-        model->setTint(_get_tint(resource.type));
+        const Vector3 normal = Vector3Normalize(Vector3Subtract(position, center));
+        const Vector3 axis = Vector3CrossProduct(up, normal);
+        const f32 angle = acosf(Vector3DotProduct(up, normal));
 
+        if (Vector3Length(axis) > EPSILON) {
+            model->setRotationAxis(axis, angle * RAD2DEG);
+        }
+
+        // model->setTint(_get_tint(resource.type));
+        model->setScale({scale, scale, scale});
         out_scene->add(model);
     }
 }
@@ -76,7 +88,7 @@ void zappy::create::rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::ren
             const Vector2f base_uv = {static_cast<f32>(x) / static_cast<f32>(width), static_cast<f32>(y) / static_cast<f32>(height)};
             const Vector3 base_position = maths::to_sphere(base_uv, radius);
 
-            for (u32 res_idx = 0; res_idx < 7; ++res_idx) {
+            for (u32 res_idx = 0; res_idx < ZAP_MAX_RESOURCES; ++res_idx) {
                 const auto &resource = tile[res_idx];
 
                 if (resource.quantity <= 0 || resource.type == zappy::protocol::ResourceType::UNKNOWN) {

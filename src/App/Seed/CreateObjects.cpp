@@ -300,6 +300,7 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
 #endif
 
     create::rocks(map, scene, planet.radius);
+    create::trees(scene, {static_cast<u32>(map.front().size()), static_cast<u32>(map.size())}, planet.radius);
     scene->add(_create_camera(planet));
     return scene;
 }
