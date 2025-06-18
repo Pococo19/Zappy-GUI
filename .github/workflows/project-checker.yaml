@@ -1,0 +1,46 @@
+---
+name: project_checker
+
+on:
+  push:
+    branches: [main, CI/CD]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-run:
+    name: Build and Run Zappy-GUI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Build the project
+        run: ./build.sh
+
+      - name: Find executable
+        id: find_exec
+        run: |
+          EXEC=$(find . -type f -executable -name '*' -not -path "./.*/*" | grep -v build.sh | head -n 1)
+          echo "Found executable: $EXEC"
+          echo "exec_path=$EXEC" >> $GITHUB_OUTPUT
+
+      - name: Run in virtual display (Xvfb)
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+
+          ${EXECUTABLE_PATH} &
+          PID=$!
+          echo "Running process with PID $PID"
+          sleep 5
+          kill $PID || echo "Process already exited"
+
+        env:
+          EXECUTABLE_PATH: ${{ steps.find_exec.outputs.exec_path }}
