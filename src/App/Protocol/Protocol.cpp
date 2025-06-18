@@ -93,8 +93,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         const u32 x = params[0];
         const u32 y = params[1];
 
-        std::array<protocol::Resource, 7> resources = {};
-        for (u8 i = 0; i < 7; ++i) {
+        std::array<protocol::Resource, ZAP_MAX_RESOURCES> resources = {};
+        for (u8 i = 0; i < ZAP_MAX_RESOURCES; ++i) {
             resources[i].type = static_cast<protocol::ResourceType>(i);
             resources[i].quantity = params[i + 2];
         }
@@ -123,6 +123,40 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         }
     }});
 
+    /** @brief SGT -> [time] */
+    protocol::_callbacks.insert({"sgt", [](const std::string &data) -> void
+    {
+        const auto time = protocol::parse<u32>(data, 1);
+
+        zap::logger::recv("Server time set to: ", time[0]);
+    }});
+
+    // tna N\n * nbr_teams
+    /** @brief TNA -> [team_name] */
+    protocol::_callbacks.insert({"tna", [](const std::string &data) -> void
+    {
+        const auto team_name = protocol::parse<std::string>(data, 1);
+
+        zap::logger::recv("Team name received: ", team_name[0]);
+    }});
+
+    /** @brief ENW -> [egg_id, player_id, x, y] */
+    protocol::_callbacks.insert({"enw", [](const std::string &data) -> void
+    {
+        const auto params = protocol::parse<std::string>(data, 4);
+
+        if (params.size() < 4) {
+            throw zap::exception::Error("ENW", "Invalid number of parameters");
+        }
+
+        const std::string &egg_id = params[0];
+        const std::string &player_id = params[1];
+        const u32 x = static_cast<u32>(std::stoul(params[2]));
+        const u32 y = static_cast<u32>(std::stoul(params[3]));
+
+        zap::logger::recv("Egg spawned with ID: ", egg_id, ", Player ID: ", player_id, ", at coordinates (", x, ", ", y, ")");
+    }});
+
     /**
     * @brief set callback for receiving commands from the server
     */
@@ -133,12 +167,11 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         if (protocol::_callbacks.contains(cmd)) {
             const std::string line_without_cmd = std::string(line).substr(cmd.size());
 
-            if (!protocol::_callbacks.contains(cmd)) {
-                throw zap::exception::Error("Protocol", "No callback registered for command: ", cmd);
-            }
-
             protocol::_callbacks[cmd](line_without_cmd);
+            return;
         }
+
+        throw zap::exception::Error("Protocol", "No callback registered for command: ", cmd);
     });
     // clang-format on
 

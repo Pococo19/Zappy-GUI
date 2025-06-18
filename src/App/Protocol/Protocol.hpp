@@ -21,6 +21,8 @@
 
 namespace zappy::protocol {
 
+#define ZAP_MAX_RESOURCES 7
+
 // clang-format off
 enum ResourceType {
     UNKNOWN = -1,
@@ -38,7 +40,6 @@ struct Resource {
     u32 quantity = 0;
 };
 
-#define MAX_ResourceS 7
 // clang-format on
 
 template<typename T>
@@ -63,7 +64,7 @@ const std::vector<T> parse(const std::string_view line, const u32 expected_count
     return result;
 }
 
-using GUI_Map = std::vector<std::vector<std::array<Resource, 7>>>;
+using GUI_Map = std::vector<std::vector<std::array<Resource, ZAP_MAX_RESOURCES>>>;
 using ParserFunc = std::function<void(const std::string &)>;
 
 extern bool _ready;
