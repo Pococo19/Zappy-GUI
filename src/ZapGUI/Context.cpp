@@ -5,6 +5,7 @@
 ** Context.cpp
 */
 
+#define ZAP_RAYLIB_NO_LOGGING
 #define ZAP_USE_RAYLIB_RLGL
 #include <ZapGUI/Raylib.hpp>
 
@@ -20,7 +21,7 @@
 
 static inline void _create_window_context(const Vector2u &size, const std::string &title, const u32 max_framerate)
 {
-#if !defined(DEBUG)
+#if defined(ZAP_RAYLIB_NO_LOGGING)
     SetTraceLogLevel(LOG_NONE);
 #endif
 
