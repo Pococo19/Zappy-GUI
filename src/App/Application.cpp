@@ -40,7 +40,11 @@ void zappy::Application::init()
 
     zap::logger::debug("Map retrieved successfully. Size: ", map.size(), "x", map[0].size());
 
-    addScene("main", _create_main_scene(map));
+    try {
+        addScene("main", _create_main_scene(map));
+    } catch (const zap::exception::Error &e) {
+        zap::logger::error(e);
+    }
 }
 
 void zappy::Application::update()
