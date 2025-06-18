@@ -68,7 +68,6 @@ case "$DISTRO" in
             xorg-dev \
             gcc \
             cmake
-        sudo apt-get upgrade -y
 
         ;;
     alpine)
@@ -85,7 +84,6 @@ case "$DISTRO" in
             xorg-server-dev \
             gcc \
             cmake
-        sudo apk upgrade --available
         ;;
     arch)
         _info "Arch Linux found, installing dependencies via pacman"
