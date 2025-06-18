@@ -21,7 +21,7 @@ jobs:
       - name: Install Xvfb
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libx11-dev libgl1-mesa-dev
+          sudo apt-get install -y xvfb libx11-dev libgl1-mesa-dev libxrandr-dev
 
       - name: Build the project
         run: ./build.sh
