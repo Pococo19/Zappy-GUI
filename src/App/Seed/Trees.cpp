@@ -8,8 +8,8 @@
 #include "App/Maths/Maths.hpp"
 #include <App/Seed/Create.hpp>
 
-#define MIN_DISTANCE = 2.0f;
-#define MAX_ATTEMPTS = 100;
+#define MIN_DISTANCE 2.0f
+#define MAX_ATTEMPTS 100
 #define COUNT_RANDOM_RANGE (2.5f, 3.0f)
 
 // clang-format off
