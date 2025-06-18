@@ -10,8 +10,6 @@
 #include <ZapGUI/Engine/RenderEngine.hpp>
 #include <ZapGUI/NonCopyable.hpp>
 
-#include <memory>
-
 namespace zap::render {
 
 class Loop final : public abstract::NonCopyable
