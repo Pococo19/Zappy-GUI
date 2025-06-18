@@ -28,7 +28,7 @@ namespace zappy::maths {
  * y = r × cosφ
  * z = r × sinφ × sinθ
  */
-static const inline Vector3 to_sphere(const Vector2f uv, const f32 radius)
+static const inline Vector3 to_sphere(const Vector2f &uv, const f32 radius)
 {
     const f32 theta = uv._x * 2.0f * PI;//<< longitude θ ∈ [0,2π]
     const f32 phi = uv._y * PI;         //<< latitude (θ ∈ π)
@@ -39,6 +39,26 @@ static const inline Vector3 to_sphere(const Vector2f uv, const f32 radius)
     const f32 z = radius * sinf(phi) * sinf(theta);
 
     return Vector3{x, y, z};
+}
+
+static inline Vector3 rotation(const Vector3 &position, f32 *out_angle)
+{
+    constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
+    constexpr Vector3 up = {0.0f, 1.0f, 0.0f};
+    const Vector3 normalized = Vector3Normalize(Vector3Subtract(position, center));
+    const Vector3 axis = Vector3CrossProduct(up, normalized);
+    const f32 angle = acosf(Vector3DotProduct(up, normalized));
+
+    if (Vector3Length(axis) > EPSILON) {
+        *out_angle = angle * RAD2DEG;
+        return {
+            axis.x,
+            axis.y,
+            axis.z,
+        };
+    }
+    *out_angle = 0.0f;
+    return {0.0f, 0.0f, 0.0f};
 }
 
 /**
