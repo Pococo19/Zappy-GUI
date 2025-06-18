@@ -17,7 +17,7 @@ class NonCopyable
 {
     protected:
         constexpr explicit NonCopyable() = default;
-        ~NonCopyable() = default;
+        constexpr ~NonCopyable() = default;
 
     private:
         constexpr explicit NonCopyable(NonCopyable &&) = delete;

@@ -6,6 +6,7 @@
 */
 
 #include <ZapGUI/Engine/GameEngine.hpp>
+#include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Logger.hpp>
 
 /**
@@ -31,6 +32,7 @@ void zap::abstract::GameEngine::update()
     for (const auto &scene : _scenes) {
         scene.second->update();
     }
+    event::EventCallback::getInstance().listen();
 }
 
 /**

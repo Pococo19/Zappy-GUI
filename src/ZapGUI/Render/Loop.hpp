@@ -9,9 +9,6 @@
 
 #include <ZapGUI/Engine/RenderEngine.hpp>
 #include <ZapGUI/NonCopyable.hpp>
-#include <ZapGUI/Network/Client.hpp>
-
-#include <memory>
 
 namespace zap::render {
 
