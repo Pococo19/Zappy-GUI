@@ -18,10 +18,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Install Xvfb
+      - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb libx11-dev libgl1-mesa-dev libxrandr-dev
+          bash scripts/dependencies.sh
 
       - name: Build the project
         run: ./build.sh
@@ -32,17 +31,6 @@ jobs:
           EXEC=$(find . -type f -executable -name '*' -not -path "./.*/*" | grep -v build.sh | head -n 1)
           echo "Found executable: $EXEC"
           echo "exec_path=$EXEC" >> $GITHUB_OUTPUT
-
-      - name: Run in virtual display (Xvfb)
-        run: |
-          Xvfb :99 &
-          export DISPLAY=:99
-
-          ${EXECUTABLE_PATH} &
-          PID=$!
-          echo "Running process with PID $PID"
-          sleep 5
-          kill $PID || echo "Process already exited"
 
         env:
           EXECUTABLE_PATH: ${{ steps.find_exec.outputs.exec_path }}
