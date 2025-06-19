@@ -40,7 +40,3 @@
 #define ZAP_DEFAULT_WINDOW_SIZE {1920, 1080}
 
 #define ZAP_DEFAULT_MAX_FRAMERATE 120.0
-
-#ifndef ZAP_GUI_VERSION
-    #define ZAP_GUI_VERSION "0.0.1"
-#endif
