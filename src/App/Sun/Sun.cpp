@@ -5,6 +5,7 @@
 ** Sun.cpp
 */
 
+#include "ZapGUI/Error.hpp"
 #define ZAP_USE_RAYLIB_MATH
 #include <App/Sun/Sun.hpp>
 
