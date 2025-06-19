@@ -300,14 +300,12 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
     }
 #endif
 
-    create::rocks(map, scene, planet.radius + 0.05f);
-    create::trees(scene, {static_cast<u32>(map.front().size()), static_cast<u32>(map.size())}, planet.radius);
-
     auto camera = _create_camera(planet);
     scene->add(camera);
 
-    auto sun = std::make_shared<zappy::Sun>(camera, planet.radius);
-    scene->add(sun);
+    create::rocks(map, scene, planet.radius + 0.05f);
+    create::trees(scene, {static_cast<u32>(map.front().size()), static_cast<u32>(map.size())}, planet.radius);
+    create::sun(scene, camera, planet.radius);
 
     return scene;
 }
