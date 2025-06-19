@@ -46,7 +46,8 @@ void zappy::Sun::update()
     const float orbit_radius = _planet_radius * 4.5f + _planet_radius;
     const float orbit_speed = 0.2f;
 
-    Vector3 orbit_position = {orbit_radius * cosf(time * orbit_speed), 0.0f, orbit_radius * sinf(time * orbit_speed)};
+    /** @brief calculate the orbit position based on time */
+    const Vector3 orbit_position = {orbit_radius * cosf(time * orbit_speed), 0.0f, orbit_radius * sinf(time * orbit_speed)};
     _model->setPosition(orbit_position);
 
     /** @brief rotate the sun around its own axis */
