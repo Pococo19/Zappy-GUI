@@ -23,28 +23,6 @@ static const std::vector<std::string> _rocks_models = {
     zap::Filename::getPath("assets/models/Pebble_Square_6.obj"),
 };
 
-// static constexpr Color _get_tint(const zappy::protocol::ResourceType type)
-// {
-//     switch (type) {
-//         case zappy::protocol::ResourceType::FOOD:
-//             return BROWN;
-//         case zappy::protocol::ResourceType::LINEMATE:
-//             return BLUE;
-//         case zappy::protocol::ResourceType::DERAUMERE:
-//             return RED;
-//         case zappy::protocol::ResourceType::SIBUR:
-//             return GREEN;
-//         case zappy::protocol::ResourceType::MENDIANE:
-//             return PURPLE;
-//         case zappy::protocol::ResourceType::PHIRAS:
-//             return ORANGE;
-//         case zappy::protocol::ResourceType::THYSTAME:
-//             return YELLOW;
-//         default:
-//             return WHITE;
-//     }
-// }
-
 static void _push_resource(const zappy::protocol::Resource &resource, std::shared_ptr<zap::render::Scene> &out_scene, const Vector3 &position)
 {
     constexpr u64 size = sizeof(_rocks_models) / sizeof(_rocks_models[0]);
@@ -70,7 +48,6 @@ static void _push_resource(const zappy::protocol::Resource &resource, std::share
             model->setRotationAxis(axis, angle * RAD2DEG);
         }
 
-        // model->setTint(_get_tint(resource.type));
         model->setScale({scale, scale, scale});
         out_scene->add(model);
     }

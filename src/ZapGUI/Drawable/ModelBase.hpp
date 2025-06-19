@@ -39,6 +39,9 @@ class ModelBase
         Color getTint() const;
 
         void setRotationAxis(const Vector3 &axis, const f32 angle);
+        void setShader(const Shader &shader);
+
+        Matrix getTransform() const;
 
     protected:
         Model _model;

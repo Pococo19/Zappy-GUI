@@ -16,13 +16,15 @@ namespace zap {
 class ShaderModel : public abstract::Drawable
 {
     public:
-        explicit ShaderModel(Shader &shader, std::shared_ptr<ZapModel> model, std::shared_ptr<ZapCamera> camera);
+        explicit ShaderModel(std::shared_ptr<ZapCamera>);
         ~ShaderModel() override;
 
         void draw() const override;
         void update() override;
 
     protected:
+        void _init();
+
         std::shared_ptr<ZapModel> _model;
         std::shared_ptr<ZapCamera> _camera;
         Shader _shader;
