@@ -153,3 +153,13 @@ static inline void close(i32 *socket)
 }
 
 }// namespace zap::network
+
+
+    const char *skyboxTextures[6] = {
+        "nx.png",    // +X face
+        "ny.png",     // -X face
+        "nz.png",      // +Y face
+        "px.png",   // -Y face
+        "py.png",    // +Z face
+        "pz.png"      // -Z face
+    };

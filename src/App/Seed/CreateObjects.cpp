@@ -8,6 +8,7 @@
 #define ZAP_USE_RAYLIB_MATH
 #include <ZapGUI/Raylib.hpp>
 
+#include <ZapGUI/Drawable/SkyBox.hpp>
 #include <ZapGUI/Drawable/Mesh.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Filename.hpp>
@@ -286,8 +287,11 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
 {
     auto scene = std::make_shared<zap::render::Scene>();
     const Planet planet = _create_planet(map);
+    auto skybox = std::make_shared<zap::SkyBox>(skybox);
 
     scene->add(planet.model);
+    scene->add(skybox);
+
 
 #if defined(DEBUG)
     std::vector<TileOutline> outlines;

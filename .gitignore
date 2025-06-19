@@ -62,3 +62,5 @@ zappy_gui
 *.mtl
 *.obj
 *.cc
+
+walk
