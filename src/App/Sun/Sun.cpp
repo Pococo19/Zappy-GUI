@@ -6,6 +6,7 @@
 */
 
 #define ZAP_USE_RAYLIB_MATH
+#include <App/Maths/Maths.hpp>
 #include <App/Sun/Sun.hpp>
 
 #include <ZapGUI/Filename.hpp>
@@ -20,6 +21,7 @@ zappy::Sun::Sun(const std::shared_ptr<zap::ZapCamera> &camera, const f32 planet_
     _init();
     _model->setPosition({planet_radius * 4.5f + planet_radius, 0.0f, 0.0f});
     _planet_radius = planet_radius;
+    _stars = LoadModelFromMesh(GenMeshSphere(0.05f, 4, 4));
 }
 
 void zappy::Sun::draw() const
@@ -28,16 +30,11 @@ void zappy::Sun::draw() const
 
     _model->draw();
 
-    for (u8 i = 0; i < 50; ++i) {
-        const f32 x = static_cast<f32>(i * 137 % 100 - 50);
-        const f32 y = static_cast<f32>(i * 97 % 100 - 50);
-        const f32 z = static_cast<f32>(i * 73 % 100 - 50);
+    for (u32 i = 0; i < _stars_positions.size(); ++i) {
+        const Vector3 &pos = _stars_positions[i];
+        const f32 twinkle = 0.5f + 0.5f * sinf(time * 3.0f + static_cast<f32>(i));
 
-        if (Vector3Length({x, y, z}) > 15.0f) {
-            const f32 twinkle = 0.5f + 0.5f * sinf(time * 3.0f + i);
-
-            DrawSphere({x, y, z}, 0.05f, ColorAlpha(WHITE, twinkle));
-        }
+        DrawModelEx(_stars, pos, {0, 1, 0}, 0.0f, {1, 1, 1}, ColorAlpha(WHITE, twinkle));
     }
 }
 
@@ -78,4 +75,17 @@ void zappy::Sun::_init()
 
     _model->setShader(_shader);
     zap::logger::debug("Sun shader loaded with ID: ", _shader.id);
+
+    for (u32 i = 0; i < 500; ++i) {
+        const f32 theta = maths::random<f32>(0.0f, 2.0f * PI);
+        const f32 phi = acosf(maths::random<f32>(-1.0f, 1.0f));
+
+        const f32 x = sinf(phi) * cosf(theta);
+        const f32 y = sinf(phi) * sinf(theta);
+        const f32 z = cosf(phi);
+
+        const f32 radius = maths::random<f32>(15.0f, 50.0f);
+
+        _stars_positions.push_back({x * radius, y * radius, z * radius});
+    }
 }

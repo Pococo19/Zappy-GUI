@@ -37,6 +37,9 @@ class Sun final : public zap::ShaderModel
         i32 _matModelLoc = 0;
 
         f32 _planet_radius = 0.0f;
+
+        Model _stars;
+        std::vector<Vector3> _stars_positions;
 };
 
 }// namespace zappy
