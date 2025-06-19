@@ -43,6 +43,11 @@ void zap::abstract::ModelBase::setScale(const Vector3 &scale)
     _scale = scale;
 }
 
+void zap::abstract::ModelBase::setRotation(const Vector3 &rotation)
+{
+    _rotationAxis = rotation;
+}
+
 Vector3 zap::abstract::ModelBase::getScale() const
 {
     return _scale;

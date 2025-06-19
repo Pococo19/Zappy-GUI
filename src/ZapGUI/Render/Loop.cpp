@@ -39,6 +39,7 @@ void zap::render::Loop::_render() const noexcept
     ClearBackground(BLACK);
     _engine->render();
     DrawText("ESC to leave", 10, 10, 20, DARKGRAY);
+    DrawFPS(10, 30);
     EndDrawing();
 }
 

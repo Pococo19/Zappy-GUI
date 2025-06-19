@@ -21,7 +21,7 @@ namespace zappy {
 class Sun final : public zap::ShaderModel
 {
     public:
-        explicit Sun(const std::shared_ptr<zap::ZapCamera> &camera);
+        explicit Sun(const std::shared_ptr<zap::ZapCamera> &camera, const f32 planet_radius);
 
         void draw() const override;
         void update() override;
@@ -35,6 +35,8 @@ class Sun final : public zap::ShaderModel
         i32 _viewPosLoc = 0;
         i32 _mvpLoc = 0;
         i32 _matModelLoc = 0;
+
+        f32 _planet_radius = 0.0f;
 };
 
 }// namespace zappy

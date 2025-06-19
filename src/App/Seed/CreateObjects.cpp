@@ -306,7 +306,7 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
     auto camera = _create_camera(planet);
     scene->add(camera);
 
-    auto sun = std::make_shared<zappy::Sun>(camera);
+    auto sun = std::make_shared<zappy::Sun>(camera, planet.radius);
     scene->add(sun);
 
     return scene;

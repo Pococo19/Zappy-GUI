@@ -89,5 +89,5 @@ void zappy::create::trees(std::shared_ptr<zap::render::Scene> &out_scene, const 
     const Vector3 scale = _get_scale(radius, map_size._x, map_size._y);
 
     _seed(out_scene, _tree_models, radius, count, scale);
-    _seed(out_scene, _flower_models, radius, count * 3, scale);
+    _seed(out_scene, _flower_models, radius, count * 4, scale);
 }
