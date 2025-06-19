@@ -5,7 +5,6 @@
 ** Sun.cpp
 */
 
-#include "ZapGUI/Error.hpp"
 #define ZAP_USE_RAYLIB_MATH
 #include <App/Sun/Sun.hpp>
 
@@ -20,6 +19,7 @@ zappy::Sun::Sun(const std::shared_ptr<zap::ZapCamera> &camera) : zap::ShaderMode
 {
     _init();
     _model->setPosition({10.0f, 10.0f, 10.0f});
+    _model->setRotationAxis({0.0f, 1.0f, 0.0f}, 180.0f);
 }
 
 void zappy::Sun::draw() const
