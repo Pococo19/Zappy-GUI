@@ -8,6 +8,7 @@
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Error.hpp>
 #include <ZapGUI/Filename.hpp>
+#include <ZapGUI/Macro.hpp>
 
 /**
 * public
@@ -41,7 +42,7 @@ void zap::ZapModel::draw() const
     DrawModelEx(_model, _position, _rotationAxis, _rotationAngle, _scale, _tint);
 }
 
-void zap::ZapModel::update()
+void zap::ZapModel::update(const f32 UNUSED dt)
 {
     /* __update__ */
 }

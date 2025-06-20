@@ -27,7 +27,7 @@ class Scene final : abstract::NonCopyable
         void remove(abstract::Drawable *object);
 
         void render();
-        void update();
+        void update(const f32 dt);
 
     private:
         std::vector<std::shared_ptr<zap::abstract::Drawable>> _objects;

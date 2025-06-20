@@ -38,7 +38,7 @@ void zap::render::Scene::remove(zap::abstract::Drawable *object)
 }
 // clang-format on
 
-void zap::render::Scene::update()
+void zap::render::Scene::update(const f32 dt)
 {
     if (!_camera) {
         throw exception::Error("Scene::render", "No camera set for the scene");
@@ -46,7 +46,7 @@ void zap::render::Scene::update()
     _camera->update();
 
     for (const auto &object : _objects) {
-        object->update();
+        object->update(dt);
     }
 }
 

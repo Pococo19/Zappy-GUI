@@ -7,6 +7,7 @@
 
 #include <ZapGUI/Drawable/ShaderModel.hpp>
 #include <ZapGUI/Filename.hpp>
+#include <ZapGUI/Macro.hpp>
 
 /**
 * public
@@ -27,7 +28,7 @@ zap::ShaderModel::~ShaderModel()
     }
 }
 
-void zap::ShaderModel::update()
+void zap::ShaderModel::update(const f32 UNUSED dt)
 {
     /* __update__ */
 }
