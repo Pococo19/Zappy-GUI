@@ -23,6 +23,7 @@ class ZapCamera final : public abstract::NonCopyable
         void update(i32 mode = CAMERA_FREE) noexcept;
 
         [[nodiscard]] const Camera &get() const noexcept;
+        [[nodiscard]] bool sees(const Vector3 &position) const noexcept;
 
         void setPosition(const Vector3 &position) noexcept;
         void setTarget(const Vector3 &target) noexcept;

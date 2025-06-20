@@ -52,6 +52,15 @@ void zap::ZapCamera::update(const i32 mode) noexcept
     UpdateCamera(&_camera, mode);
 }
 
+bool zap::ZapCamera::sees(const Vector3 &position) const noexcept
+{
+    const Vector3 to_target = Vector3Subtract(position, _camera.position);
+    const Vector3 forward = _camera.target;
+    const f32 dot = Vector3DotProduct(to_target, forward);
+
+    return dot > 0.98f;
+}
+
 /**
 * getters
 */
