@@ -5,7 +5,6 @@
 ** Trees.cpp
 */
 
-#include "App/Maths/Maths.hpp"
 #include <App/Seed/Create.hpp>
 
 // clang-format off
