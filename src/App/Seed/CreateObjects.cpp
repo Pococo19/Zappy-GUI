@@ -16,6 +16,7 @@
 #include <App/Application.hpp>
 #include <App/Maths/Maths.hpp>
 #include <App/Seed/Create.hpp>
+#include <App/Sun/Sun.hpp>
 
 /**
  * private struct, attributes and constants
@@ -299,8 +300,12 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
     }
 #endif
 
-    create::rocks(map, scene, planet.radius);
+    auto camera = _create_camera(planet);
+    scene->add(camera);
+
+    create::rocks(map, scene, planet.radius + 0.05f);
     create::trees(scene, {static_cast<u32>(map.front().size()), static_cast<u32>(map.size())}, planet.radius);
-    scene->add(_create_camera(planet));
+    create::sun(scene, camera, planet.radius);
+
     return scene;
 }

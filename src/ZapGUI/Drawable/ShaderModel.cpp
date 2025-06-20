@@ -6,6 +6,7 @@
 */
 
 #include "ZapGUI/Error.hpp"
+#include "ZapGUI/Logger.hpp"
 #include <ZapGUI/Drawable/ShaderModel.hpp>
 #include <ZapGUI/Filename.hpp>
 
@@ -13,10 +14,11 @@
 * public
 */
 
-zap::ShaderModel::ShaderModel(Shader &shader, std::shared_ptr<ZapModel> model, std::shared_ptr<ZapCamera> camera) : _model(model), _camera(camera), _shader(shader)
+zap::ShaderModel::ShaderModel(std::shared_ptr<ZapCamera> camera) : _camera(camera)
 {
+    _init();
     if (_shader.id == 0) {
-        throw exception::Error("ShaderModel::ShaderModel", "Failed to load shader: ", shader.id);
+        throw exception::Error("ShaderModel::ShaderModel", "Failed to load shader: ", _shader.id);
     }
 }
 
@@ -37,4 +39,13 @@ void zap::ShaderModel::draw() const
     BeginShaderMode(_shader);
     _model->draw();
     EndShaderMode();
+}
+
+/**
+* protected
+*/
+
+void zap::ShaderModel::_init()
+{
+    zap::logger::debug("MARCHE PAS");
 }

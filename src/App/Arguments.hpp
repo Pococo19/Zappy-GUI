@@ -9,6 +9,7 @@
 
 #include <ZapGUI/Macro.hpp>
 #include <ZapGUI/Types.hpp>
+#include <ZapGUI/Version.hpp>
 
 #include <functional>
 #include <regex>

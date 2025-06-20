@@ -61,6 +61,24 @@ const Camera &zap::ZapCamera::get() const noexcept
     return _camera;
 }
 
+const Matrix zap::ZapCamera::getView() const noexcept
+{
+    return MatrixLookAt(_camera.position, _camera.target, _camera.up);
+}
+
+const Matrix zap::ZapCamera::getProjection() const noexcept
+{
+    if (_camera.projection == CAMERA_PERSPECTIVE) {
+        const f64 aspect = static_cast<f64>(GetScreenWidth()) / GetScreenHeight();
+
+        return MatrixPerspective(static_cast<f64>(DEG2RAD * _camera.fovy), aspect, 0.1, 100.0);
+    }
+    const f64 width = 10.0;
+    const f64 height = 10.0;
+
+    return MatrixOrtho(-width, width, -height, height, 0.1, 100.0);
+}
+
 /**
 * setters
 */

@@ -5,11 +5,11 @@
 ** RenderLoop.cpp
 */
 
+#include "Loop.hpp"
+#include <App/Application.hpp>
+#include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Raylib.hpp>
 #include <ZapGUI/Render/Loop.hpp>
-#include <ZapGUI/Logger.hpp>
-#include <App/Application.hpp>
-#include "Loop.hpp"
 
 /**
 * public
@@ -36,9 +36,10 @@ void zap::render::Loop::_render() const noexcept
 {
 
     BeginDrawing();
-    ClearBackground(RAYWHITE);
+    ClearBackground(BLACK);
     _engine->render();
     DrawText("ESC to leave", 10, 10, 20, DARKGRAY);
+    DrawFPS(10, 30);
     EndDrawing();
 }
 

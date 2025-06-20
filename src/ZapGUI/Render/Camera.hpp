@@ -30,6 +30,9 @@ class ZapCamera final : public abstract::NonCopyable
         void setUp(const Vector3 &up) noexcept;
         void setProjection(i32 projection) noexcept;
 
+        [[nodiscard]] const Matrix getView() const noexcept;
+        [[nodiscard]] const Matrix getProjection() const noexcept;
+
     private:
         Camera _camera;
 
