@@ -18,6 +18,18 @@
 #define ZAP_ROTATION_AXIS {0.0f, 1.0f, 0.0f}
 
 /**
+ * rcamera api call
+ */
+
+extern "C" {
+RLAPI void CameraMoveForward(Camera *camera, float distance, bool moveInWorldPlane);
+RLAPI void CameraMoveUp(Camera *camera, float distance);
+RLAPI void CameraMoveRight(Camera *camera, float distance, bool moveInWorldPlane);
+RLAPI void CameraMoveToTarget(Camera *camera, float delta);
+RLAPI void CameraRoll(Camera *camera, float angle);
+}
+
+/**
 * public
 */
 
@@ -39,92 +51,50 @@ zap::ZapCamera::ZapCamera() noexcept
     return Vector3Normalize(Vector3Subtract(target, position));
 }
 
-static inline void _rotate_camera(Vector3 *up, const Vector3 &forward, f32 angle) noexcept
-{
-    if (angle == ZAP_NO_COMPUTE) {
-        return;
-    }
-    const Matrix rot = MatrixRotate(forward, angle);
-
-    *up = Vector3Transform(*up, rot);
-}
-
-static inline void _advance_camera(Vector3 *position, const Vector3 &forward, f32 speed) noexcept
-{
-    if (speed == ZAP_NO_COMPUTE) {
-        return;
-    }
-    *position = Vector3Add(*position, Vector3Scale(forward, speed));
-}
-
-static inline void _strafe_camera(Vector3 *position, const Vector3 &up, const Vector3 &forward, f32 speed) noexcept
-{
-    if (speed == ZAP_NO_COMPUTE) {
-        return;
-    }
-    const Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, up));
-
-    *position = Vector3Add(*position, Vector3Scale(right, speed));
-}
-
-static void _keybord_events(Vector3 *up, Vector3 *position, const Vector3 &forward) noexcept
-{
-    constexpr f32 rotation_speed = 0.025f;
-    constexpr f32 movement_speed = 0.1f;
-
-    if (IsKeyDown(KEY_Q)) {
-        _rotate_camera(up, forward, -rotation_speed);
-    }
-    if (IsKeyDown(KEY_E)) {
-        _rotate_camera(up, forward, rotation_speed);
-    }
-    if (IsKeyDown(KEY_W)) {
-        _advance_camera(position, forward, movement_speed);
-    }
-    if (IsKeyDown(KEY_S)) {
-        _advance_camera(position, forward, -movement_speed);
-    }
-    if (IsKeyDown(KEY_A)) {
-        _strafe_camera(position, *up, forward, -movement_speed);
-    }
-    if (IsKeyDown(KEY_D)) {
-        _strafe_camera(position, *up, forward, movement_speed);
-    }
-}
-
 /**
  * public update events method
  */
 
 void zap::ZapCamera::update() noexcept
 {
-    Vector3 forward = _get_forward(_camera.target, _camera.position);
-    Vector3 up = _camera.up;
+    const Vector2 delta = GetMouseDelta();
+    const f32 time = GetFrameTime();
 
-    const Vector2 mouse_delta = GetMouseDelta();
-    constexpr f32 sensitivity = ZAP_DEFAULT_SENSITIVITY;
-    const f32 yaw = -mouse_delta.x * sensitivity;
-    const f32 pitch = -mouse_delta.y * sensitivity;
+    const f32 move_speed = _move_speed * time;
+    const f32 rotation_speed = _rotation_speed * time;
+    const f32 camera_pan_speed = _pan_speed * time;
 
-    if (yaw != ZAP_YAW_NULL) {
-        const Matrix rot = MatrixRotate(ZAP_ROTATION_AXIS, yaw);
-
-        forward = Vector3Transform(forward, rot);
-        up = Vector3Transform(up, rot);
+    if (delta.x > ZAP_NO_COMPUTE) {
+        CameraMoveRight(&_camera, camera_pan_speed, true);
     }
-
-    if (pitch != ZAP_PITCH_NULL) {
-        const Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, up));
-        const Matrix rot = MatrixRotate(right, pitch);
-
-        forward = Vector3Transform(forward, rot);
-        up = Vector3Transform(up, rot);
+    if (delta.x < -ZAP_NO_COMPUTE) {
+        CameraMoveRight(&_camera, -camera_pan_speed, true);
     }
-
-    _keybord_events(&up, &_camera.position, forward);
-
-    _camera.target = Vector3Add(_camera.position, forward);
-    _camera.up = up;
+    if (delta.y > ZAP_NO_COMPUTE) {
+        CameraMoveUp(&_camera, -camera_pan_speed);
+    }
+    if (delta.y < -ZAP_NO_COMPUTE) {
+        CameraMoveUp(&_camera, camera_pan_speed);
+    }
+    if (IsKeyDown(KEY_Q)) {
+        CameraRoll(&_camera, -rotation_speed);
+    }
+    if (IsKeyDown(KEY_E)) {
+        CameraRoll(&_camera, rotation_speed);
+    }
+    if (IsKeyDown(KEY_W)) {
+        CameraMoveForward(&_camera, move_speed, true);
+    }
+    if (IsKeyDown(KEY_A)) {
+        CameraMoveRight(&_camera, -move_speed, true);
+    }
+    if (IsKeyDown(KEY_S)) {
+        CameraMoveForward(&_camera, -move_speed, true);
+    }
+    if (IsKeyDown(KEY_D)) {
+        CameraMoveRight(&_camera, move_speed, true);
+    }
+    CameraMoveToTarget(&_camera, -GetMouseWheelMove());
 }
 
 bool zap::ZapCamera::sees(const Vector3 &position) const noexcept
