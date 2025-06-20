@@ -20,7 +20,7 @@ class ZapCamera final : public abstract::NonCopyable
         explicit ZapCamera() noexcept;
         ~ZapCamera() noexcept = default;
 
-        void update(i32 mode = CAMERA_FREE) noexcept;
+        void update() noexcept;
 
         [[nodiscard]] const Camera &get() const noexcept;
         [[nodiscard]] bool sees(const Vector3 &position) const noexcept;
@@ -37,7 +37,9 @@ class ZapCamera final : public abstract::NonCopyable
     private:
         Camera _camera;
 
-        static constexpr f32 ROTATION_SPEED = 0.025f;
+        f32 _move_speed = 5.0f;
+        f32 _rotation_speed = 2.0f;
+        f32 _sensitivity = 0.003f;
 };
 
 }// namespace zap
