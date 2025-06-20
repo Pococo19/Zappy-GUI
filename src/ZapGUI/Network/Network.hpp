@@ -34,7 +34,7 @@ namespace zap::network {
 [[nodiscard]] static inline i32 socket()
 {
     const int opt = 1;
-    i32 sock = socket(AF_INET, SOCK_STREAM, 0);
+    i32 sock = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (sock < 0) {
         throw exception::Error("NetworkClient", "Failed to create socket");
