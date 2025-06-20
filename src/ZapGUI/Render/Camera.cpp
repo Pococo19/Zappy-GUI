@@ -11,6 +11,12 @@
 * @brief Camera is a C struct, so we need to wrap it in a C++ class
 */
 
+#define ZAP_NO_COMPUTE 0.f
+#define ZAP_PITCH_NULL 0.f
+#define ZAP_YAW_NULL 0.f
+#define ZAP_DEFAULT_SENSITIVITY 0.005f
+#define ZAP_ROTATION_AXIS {0.0f, 1.0f, 0.0f}
+
 /**
 * public
 */
@@ -25,20 +31,19 @@ zap::ZapCamera::ZapCamera() noexcept
 }
 
 /**
- * staitc helpers
+ * static helpers
  */
 
 [[nodiscard]] static inline const Vector3 _get_forward(const Vector3 &target, const Vector3 &position) noexcept
 {
-    /** @brief camera direction */
-    const Vector3 forward = Vector3Subtract(target, position);
-
-    /** @brief rotation around the "forward" axis (roll) */
-    return Vector3Normalize(forward);
+    return Vector3Normalize(Vector3Subtract(target, position));
 }
 
 static inline void _rotate_camera(Vector3 *up, const Vector3 &forward, f32 angle) noexcept
 {
+    if (angle == ZAP_NO_COMPUTE) {
+        return;
+    }
     const Matrix rot = MatrixRotate(forward, angle);
 
     *up = Vector3Transform(*up, rot);
@@ -46,49 +51,87 @@ static inline void _rotate_camera(Vector3 *up, const Vector3 &forward, f32 angle
 
 static inline void _advance_camera(Vector3 *position, const Vector3 &forward, f32 speed) noexcept
 {
+    if (speed == ZAP_NO_COMPUTE) {
+        return;
+    }
     *position = Vector3Add(*position, Vector3Scale(forward, speed));
 }
 
 static inline void _strafe_camera(Vector3 *position, const Vector3 &up, const Vector3 &forward, f32 speed) noexcept
 {
-    const Vector3 right = Vector3CrossProduct(forward, up);
+    if (speed == ZAP_NO_COMPUTE) {
+        return;
+    }
+    const Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, up));
 
-    *position = Vector3Subtract(*position, Vector3Scale(right, speed));
+    *position = Vector3Add(*position, Vector3Scale(right, speed));
 }
 
-void zap::ZapCamera::update() noexcept
+static void _keybord_events(Vector3 *up, Vector3 *position, const Vector3 &forward) noexcept
 {
-    const Vector3 forward = _get_forward(_camera.target, _camera.position);
     constexpr f32 rotation_speed = 0.025f;
     constexpr f32 movement_speed = 0.1f;
 
     if (IsKeyDown(KEY_Q)) {
-        _rotate_camera(&_camera.up, forward, -rotation_speed);
+        _rotate_camera(up, forward, -rotation_speed);
     }
     if (IsKeyDown(KEY_E)) {
-        _rotate_camera(&_camera.up, forward, rotation_speed);
+        _rotate_camera(up, forward, rotation_speed);
     }
     if (IsKeyDown(KEY_W)) {
-        _advance_camera(&_camera.position, forward, movement_speed);
+        _advance_camera(position, forward, movement_speed);
     }
     if (IsKeyDown(KEY_S)) {
-        _advance_camera(&_camera.position, forward, -movement_speed);
+        _advance_camera(position, forward, -movement_speed);
     }
     if (IsKeyDown(KEY_A)) {
-        _strafe_camera(&_camera.position, _camera.up, forward, movement_speed);
+        _strafe_camera(position, *up, forward, -movement_speed);
     }
     if (IsKeyDown(KEY_D)) {
-        _strafe_camera(&_camera.position, _camera.up, forward, -movement_speed);
+        _strafe_camera(position, *up, forward, movement_speed);
     }
+}
+
+/**
+ * public update events method
+ */
+
+void zap::ZapCamera::update() noexcept
+{
+    Vector3 forward = _get_forward(_camera.target, _camera.position);
+    Vector3 up = _camera.up;
+
+    const Vector2 mouse_delta = GetMouseDelta();
+    constexpr f32 sensitivity = ZAP_DEFAULT_SENSITIVITY;
+    const f32 yaw = -mouse_delta.x * sensitivity;
+    const f32 pitch = -mouse_delta.y * sensitivity;
+
+    if (yaw != ZAP_YAW_NULL) {
+        const Matrix rot = MatrixRotate(ZAP_ROTATION_AXIS, yaw);
+
+        forward = Vector3Transform(forward, rot);
+        up = Vector3Transform(up, rot);
+    }
+
+    if (pitch != ZAP_PITCH_NULL) {
+        const Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, up));
+        const Matrix rot = MatrixRotate(right, pitch);
+
+        forward = Vector3Transform(forward, rot);
+        up = Vector3Transform(up, rot);
+    }
+
+    _keybord_events(&up, &_camera.position, forward);
+
     _camera.target = Vector3Add(_camera.position, forward);
+    _camera.up = up;
 }
 
 bool zap::ZapCamera::sees(const Vector3 &position) const noexcept
 {
     const Vector3 to_target = Vector3Subtract(position, _camera.position);
-    const Vector3 forward = _camera.target;
-    const f32 dot = Vector3DotProduct(to_target, forward);
-
+    const Vector3 forward = _get_forward(_camera.target, _camera.position);
+    const f32 dot = Vector3DotProduct(Vector3Normalize(to_target), forward);
     return dot > 0.98f;
 }
 
