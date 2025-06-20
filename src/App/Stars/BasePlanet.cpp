@@ -33,22 +33,20 @@ void zappy::BasePlanet::draw() const
     _model->draw();
 }
 
-void zappy::BasePlanet::update()
+void zappy::BasePlanet::update(const f32 dt)
 {
-    const f32 time = static_cast<f32>(GetTime());
-
     if (_shader.id <= 0) {
         return;
     }
 
-    SetShaderValue(_shader, _timeLoc, &time, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_shader, _timeLoc, &dt, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_shader, _viewPosLoc, &_camera->get().position, SHADER_UNIFORM_VEC3);
 
     _rotation += 0.1f;
-    Vector3 rotation = {0.0f, _rotation, 0.0f};
+    const Vector3 rotation = {0.0f, _rotation, 0.0f};
     _model->setRotation(rotation);
 
-    _model->update();
+    _model->update(dt);
 }
 
 /**
