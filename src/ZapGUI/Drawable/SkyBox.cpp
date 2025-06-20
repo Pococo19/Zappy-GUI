@@ -11,26 +11,26 @@
 
 namespace zap {
 
-SkyBox::SkyBox(bool useHDR, const char* file) : useHDR(useHDR)
+SkyBox::SkyBox(bool useHDR, const char* file) : _useHDR(useHDR)
 {
-    std::memset(currentFile, 0, sizeof(currentFile));
+    std::memset(_currentFile, 0, sizeof(_currentFile));
     Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
-    model = LoadModelFromMesh(cube);
+    _model = LoadModelFromMesh(cube);
 
-    shaderSkybox = LoadShader(TextFormat("assets/shaders/skybox.vs", 330), TextFormat("assets/shaders/skybox.fs", 330));
-    model.materials[0].shader = shaderSkybox;
+    _shaderSkybox = LoadShader(TextFormat("assets/shaders/skybox.vs", 330), TextFormat("assets/shaders/skybox.fs", 330));
+    _model.materials[0].shader = _shaderSkybox;
 
     int envMap = MATERIAL_MAP_CUBEMAP;
-    int gamma = useHDR ? 1 : 0;
-    int flip = useHDR ? 1 : 0;
+    int gamma = _useHDR ? 1 : 0;
+    int flip = _useHDR ? 1 : 0;
 
-    SetShaderValue(shaderSkybox, GetShaderLocation(shaderSkybox, "environmentMap"), &envMap, SHADER_UNIFORM_INT);
-    SetShaderValue(shaderSkybox, GetShaderLocation(shaderSkybox, "doGamma"), &gamma, SHADER_UNIFORM_INT);
-    SetShaderValue(shaderSkybox, GetShaderLocation(shaderSkybox, "vflipped"), &flip, SHADER_UNIFORM_INT);
+    SetShaderValue(_shaderSkybox, GetShaderLocation(_shaderSkybox, "environmentMap"), &envMap, SHADER_UNIFORM_INT);
+    SetShaderValue(_shaderSkybox, GetShaderLocation(_shaderSkybox, "doGamma"), &gamma, SHADER_UNIFORM_INT);
+    SetShaderValue(_shaderSkybox, GetShaderLocation(_shaderSkybox, "vflipped"), &flip, SHADER_UNIFORM_INT);
 
-    shaderCubemap = LoadShader(TextFormat("assets/shaders/cubemap.vs", 330), TextFormat("assets/shaders/cubemap.fs", 330));
+    _shaderCubemap = LoadShader(TextFormat("assets/shaders/cubemap.vs", 330), TextFormat("assets/shaders/cubemap.fs", 330));
     int eqMap = 0;
-    SetShaderValue(shaderCubemap, GetShaderLocation(shaderCubemap, "equirectangularMap"), &eqMap, SHADER_UNIFORM_INT);
+    SetShaderValue(_shaderCubemap, GetShaderLocation(_shaderCubemap, "equirectangularMap"), &eqMap, SHADER_UNIFORM_INT);
 
     if (file)
         LoadFromFile(file);
@@ -38,23 +38,23 @@ SkyBox::SkyBox(bool useHDR, const char* file) : useHDR(useHDR)
 
 SkyBox::~SkyBox()
 {
-    UnloadShader(shaderSkybox);
-    UnloadShader(shaderCubemap);
-    UnloadTexture(model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
-    UnloadModel(model);
+    UnloadShader(_shaderSkybox);
+    UnloadShader(_shaderCubemap);
+    UnloadTexture(_model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
+    UnloadModel(_model);
 }
 
 void SkyBox::LoadFromFile(const char* fileName)
 {
-    std::strncpy(currentFile, fileName, sizeof(currentFile) - 1);
+    std::strncpy(_currentFile, fileName, sizeof(_currentFile) - 1);
 
-    if (useHDR) {
-        panorama = LoadTexture(fileName);
-        model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenCubemap(shaderCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-        UnloadTexture(panorama);
+    if (_useHDR) {
+        _panorama = LoadTexture(fileName);
+        _model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenCubemap(_shaderCubemap, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+        UnloadTexture(_panorama);
     } else {
         Image img = LoadImage(fileName);
-        model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(img, CUBEMAP_LAYOUT_AUTO_DETECT);
+        _model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(img, CUBEMAP_LAYOUT_AUTO_DETECT);
         UnloadImage(img);
     }
 }
@@ -64,7 +64,7 @@ void SkyBox::ReloadDropped()
     if (IsFileDropped()) {
         FilePathList dropped = LoadDroppedFiles();
         if (dropped.count == 1 && IsFileExtension(dropped.paths[0], ".png;.jpg;.hdr;.bmp;.tga")) {
-            UnloadTexture(model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
+            UnloadTexture(_model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
             LoadFromFile(dropped.paths[0]);
         }
         UnloadDroppedFiles(dropped);
@@ -76,15 +76,21 @@ void SkyBox::Draw()
     rlDisableBackfaceCulling();
     rlDisableDepthMask();
 
-    DrawModel(model, Vector3{ 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
+    DrawModel(_model, Vector3{ 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
 
     rlEnableBackfaceCulling();
     rlEnableDepthMask();
 }
 
-TextureCubemap SkyBox::GenCubemap(Shader shader, Texture2D panoramaTex, int size, int format)
+TextureCubemap SkyBox::GenCubemap(Shader shader, int size, int format)
 {
-    TextureCubemap cubemap = { 0 };
+    TextureCubemap cubemap = {};
+    cubemap.id = 0;
+    cubemap.width = 0;
+    cubemap.height = 0;
+    cubemap.mipmaps = 1;
+    cubemap.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+
     rlDisableBackfaceCulling();     // Disable backface culling to render inside the cube
 
     unsigned int rbo = rlLoadTextureDepth(size, size, true);
@@ -102,23 +108,23 @@ TextureCubemap SkyBox::GenCubemap(Shader shader, Texture2D panoramaTex, int size
     rlEnableShader(shader.id);
 
     // Define projection matrix and send it to shader
-    Matrix matFboProjection = MatrixPerspective(90.0f * DEG2RAD, 1.0f, 0.1f, 1000.0f); // Changed to use fixed near and far values
 
-    // Define view matrix for every side of the cubemap
+    // // Define view matrix for every side of the cubemap
     Matrix fboViews[6] = {
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){ -1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f,  1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f, -1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f, -1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f, 0.0f,  1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f, 0.0f, -1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f })
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, -1.0f,  0.0f }),
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, { -1.0f,  0.0f,  0.0f }, { 0.0f, -1.0f,  0.0f }),
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, {  0.0f,  1.0f,  0.0f }, { 0.0f,  0.0f,  1.0f }),
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, {  0.0f, -1.0f,  0.0f }, { 0.0f,  0.0f, -1.0f }),
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, {  0.0f,  0.0f,  1.0f }, { 0.0f, -1.0f,  0.0f }),
+        MatrixLookAt({ 0.0f, 0.0f, 0.0f }, {  0.0f,  0.0f, -1.0f }, { 0.0f, -1.0f,  0.0f })
     };
+
 
     rlViewport(0, 0, size, size);   // Set viewport to current fbo dimensions
     
     // Activate and enable texture for drawing to cubemap faces
     rlActiveTextureSlot(0);
-    rlEnableTexture(panorama.id);
+    rlEnableTexture(_panorama.id);
 
     for (int i = 0; i < 6; i++)
     {
@@ -137,7 +143,7 @@ TextureCubemap SkyBox::GenCubemap(Shader shader, Texture2D panoramaTex, int size
         // ALTERNATIVE: Try to use internal batch system to draw the cube instead of rlLoadDrawCube
         // for some reason this method does not work, maybe due to cube triangles definition? normals pointing out?
         // TODO: Investigate this issue...
-        //rlSetTexture(panorama.id); // WARNING: It must be called after enabling current framebuffer if using internal batch system!
+        //rlSetTexture(_panorama.id); // WARNING: It must be called after enabling current framebuffer if using internal batch system!
         //rlClearScreenBuffers();
         //DrawCubeV(Vector3Zero(), Vector3One(), WHITE);
         //rlDrawRenderBatchActive();

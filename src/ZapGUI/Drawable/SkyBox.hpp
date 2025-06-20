@@ -24,19 +24,18 @@ public:
 
     void Draw();
 
-
     void LoadFromFile(const char* fileName);
     void ReloadDropped();
 
 private:
-    Model model;
-    Shader shaderSkybox;
-    Shader shaderCubemap;
-    Texture2D panorama;
-    bool useHDR;
-    char currentFile[256];
+    Model _model;
+    Shader _shaderSkybox;
+    Shader _shaderCubemap;
+    Texture2D _panorama;
+    bool _useHDR;
+    char _currentFile[256];
 
-    TextureCubemap GenCubemap(Shader shader, Texture2D panoramaTex, int size, int format);
+    TextureCubemap GenCubemap(Shader shader, int size, int format);
 };
 
 }

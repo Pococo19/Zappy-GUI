@@ -287,11 +287,9 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
 {
     auto scene = std::make_shared<zap::render::Scene>();
     const Planet planet = _create_planet(map);
-    auto skybox = std::make_shared<zap::SkyBox>(skybox);
+    zap::SkyBox skybox(true, "skybox2.png");
 
-    scene->add(planet.model);
-    scene->add(skybox);
-
+    // scene->add(planet.model);
 
 #if defined(DEBUG)
     std::vector<TileOutline> outlines;
