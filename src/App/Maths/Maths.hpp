@@ -28,7 +28,7 @@ namespace zappy::maths {
  * y = r × cosφ
  * z = r × sinφ × sinθ
  */
-static const inline Vector3 to_sphere(const Vector2f &uv, const f32 radius)
+[[nodiscard]] static const inline Vector3 to_sphere(const Vector2f &uv, const f32 radius)
 {
     const f32 theta = uv._x * 2.0f * PI;//<< longitude θ ∈ [0,2π]
     const f32 phi = uv._y * PI;         //<< latitude (θ ∈ π)
@@ -41,6 +41,28 @@ static const inline Vector3 to_sphere(const Vector2f &uv, const f32 radius)
     return Vector3{x, y, z};
 }
 
+/**
+* @brief calculates the position of an orbiting object around a center point
+*
+* pos = (orbit_radius × cos(time × speed), 0, orbit_radius × sin(time × speed))
+*/
+[[nodiscard]] static const inline Vector3 orbit_position(const f32 speed, const f32 around_radius, const f32 time, const f32 offset = 4.5f)
+{
+    const f32 orbit_radius = around_radius * offset + around_radius;
+
+    return {
+        orbit_radius * cosf(time * speed),
+        0.0f,
+        (orbit_radius * 0.8f) * sinf(time * speed)
+    };
+}
+
+/**
+* @brief calculates the rotation axis and angle between two vectors
+*
+*   axis = up × normalized
+*   angle = acos(up ⋅ normalized)
+*/
 static inline Vector3 rotation(const Vector3 &position, f32 *out_angle)
 {
     constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
