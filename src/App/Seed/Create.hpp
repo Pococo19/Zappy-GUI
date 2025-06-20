@@ -8,6 +8,7 @@
 #pragma once
 
 #define ZAP_USE_RAYLIB_MATH
+#include <App/Stars/BasePlanet.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
 #include <ZapGUI/Filename.hpp>
 #include <ZapGUI/Render/Scene.hpp>
@@ -38,6 +39,6 @@ static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, 
 
 void rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::render::Scene> &out_scene, const f32 radius);
 void trees(std::shared_ptr<zap::render::Scene> &out_scene, const Vector2u &map_size, const f32 radius);
-void sun(std::shared_ptr<zap::render::Scene> &out_scene, std::shared_ptr<zap::ZapCamera> &camera, const f32 radius);
+void system(std::shared_ptr<zap::render::Scene> &out_scene, std::shared_ptr<zap::ZapCamera> &camera, std::shared_ptr<BasePlanet> zappy);
 
 }// namespace zappy::create

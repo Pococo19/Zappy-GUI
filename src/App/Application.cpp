@@ -32,16 +32,16 @@ zappy::Application::~Application()
 
 void zappy::Application::init()
 {
-    await const auto map = protocol::getMap();
+    await const auto data = protocol::getData();
 
-    if (map.empty() || map.front().empty()) {
+    if (data.map.empty() || data.map.front().empty()) {
         throw zap::exception::Error("Application::init", "Map is empty after protocol initialization");
     }
 
-    zap::logger::debug("Map retrieved successfully. Size: ", map.size(), "x", map[0].size());
+    zap::logger::debug("Map retrieved successfully. Size: ", data.map.size(), "x", data.map[0].size());
 
     try {
-        addScene("main", _create_main_scene(map));
+        addScene("main", _create_main_scene(data));
     } catch (const zap::exception::Error &e) {
         zap::logger::error(e);
     }

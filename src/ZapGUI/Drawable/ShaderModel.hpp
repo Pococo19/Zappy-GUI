@@ -20,11 +20,9 @@ class ShaderModel : public abstract::Drawable
         ~ShaderModel() override;
 
         void draw() const override;
-        void update() override;
+        void update(const f32 dt) override;
 
     protected:
-        void _init();
-
         std::shared_ptr<ZapModel> _model;
         std::shared_ptr<ZapCamera> _camera;
         Shader _shader;

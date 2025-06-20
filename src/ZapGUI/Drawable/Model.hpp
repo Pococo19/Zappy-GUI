@@ -25,6 +25,6 @@ class ZapModel final : public abstract::ModelBase, public abstract::Drawable
         static std::shared_ptr<ZapModel> from_heightmap(const std::string &obj_path, const std::string &texture_path = "", const f32 max_height = 30.0f);
 
         void draw() const override;
-        void update() override;
+        void update(const f32 dt) override;
 };
 }// namespace zap

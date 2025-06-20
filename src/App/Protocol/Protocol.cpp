@@ -26,20 +26,20 @@ async(run_client, std::shared_ptr<zap::NetworkClient> net)
 
 static inline u32 _max_tiles = 0;
 static inline u32 _received_tiles = 0;
-static inline std::mutex _map_mutex;
+static inline std::mutex _data_mutex;
 
 bool zappy::protocol::_ready = false;
-zappy::protocol::GUI_Map zappy::protocol::_map;
+zappy::protocol::Data zappy::protocol::_data;
 
 /**
  * protocol functions
  */
 
-zappy::protocol::GUI_Map zappy::protocol::getMap()
+zappy::protocol::Data zappy::protocol::getData()
 {
-    std::lock_guard<std::mutex> lock(_map_mutex);
+    std::lock_guard<std::mutex> lock(_data_mutex);
 
-    return _map;
+    return _data;
 }
 
 /**
@@ -70,8 +70,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
 
         zap::logger::debug("Initializing map with dimensions: ", width, "x", height);
 
-        std::lock_guard<std::mutex> lock(_map_mutex);
-        _map = std::vector<std::vector<std::array<protocol::Resource, 7>>>(height, std::vector<std::array<protocol::Resource, 7>>(width));
+        std::lock_guard<std::mutex> lock(_data_mutex);
+        _data.map = std::vector<std::vector<std::array<protocol::Resource, 7>>>(height, std::vector<std::array<protocol::Resource, 7>>(width));
         _received_tiles = 0;
         _max_tiles = width * height;
         _ready = false;
@@ -100,25 +100,25 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         }
 
         {
-            std::lock_guard<std::mutex> lock(_map_mutex);
+            std::lock_guard<std::mutex> lock(_data_mutex);
             
-            if (_map.empty()) {
+            if (_data.map.empty()) {
                 throw zap::exception::Error("BCT", "Map is not initialized yet. Please ensure 'msz' command was received before 'bct'.");
             }
             
-            if (y >= _map.size() || x >= _map[y].size()) {
-                throw zap::exception::Error("BCT", "Coordinates out of bounds: x=", x, ", y=", y, ", map_height=", _map.size(), ", map_width=", _map.empty() ? 0 : _map[0].size());
+            if (y >= _data.map.size() || x >= _data.map[y].size()) {
+                throw zap::exception::Error("BCT", "Coordinates out of bounds: x=", x, ", y=", y, ", map_height=", _data.map.size(), ", map_width=", _data.map.empty() ? 0 : _data.map[0].size());
             }
 
-            _map[y][x] = resources;
+            _data.map[y][x] = resources;
             ++_received_tiles;
         }
 
         zap::logger::recv("Received tile ", _received_tiles, "/", _max_tiles);
 
         if (_received_tiles == _max_tiles) {
-            std::lock_guard<std::mutex> lock(_map_mutex);
-            zap::logger::debug("All tiles received, map is ready! Map size: ", _map.size(), "x", (_map.empty() ? 0 : _map[0].size()));
+            std::lock_guard<std::mutex> lock(_data_mutex);
+            zap::logger::debug("All tiles received, map is ready! Map size: ", _data.map.size(), "x", (_data.map.empty() ? 0 : _data.map[0].size()));
             protocol::_ready = true;
         }
     }});
@@ -128,7 +128,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
     {
         const auto time = protocol::parse<u32>(data, 1);
 
-        zap::logger::recv("Server time set to: ", time[0]);
+        _data.time = time.front();
     }});
 
     // tna N\n * nbr_teams
@@ -137,7 +137,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
     {
         const auto team_name = protocol::parse<std::string>(data, 1);
 
-        zap::logger::recv("Team name received: ", team_name[0]);
+        _data.teams.push_back(team_name.front());
     }});
 
     /** @brief ENW -> [egg_id, player_id, x, y] */

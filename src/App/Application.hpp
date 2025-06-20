@@ -30,6 +30,6 @@ class Application final : public zap::abstract::GameEngine
         void _init_network();
 };
 
-std::shared_ptr<zap::render::Scene> _create_main_scene(const protocol::GUI_Map &map);
+std::shared_ptr<zap::render::Scene> _create_main_scene(const protocol::Data &map);
 
 }// namespace zappy
