@@ -24,32 +24,63 @@ zap::ZapCamera::ZapCamera() noexcept
     _camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void zap::ZapCamera::update(const i32 mode) noexcept
+/**
+ * staitc helpers
+ */
+
+[[nodiscard]] static inline const Vector3 _get_forward(const Vector3 &target, const Vector3 &position) noexcept
 {
     /** @brief camera direction */
-    Vector3 forward = Vector3Subtract(_camera.target, _camera.position);
+    const Vector3 forward = Vector3Subtract(target, position);
 
     /** @brief rotation around the "forward" axis (roll) */
-    forward = Vector3Normalize(forward);
+    return Vector3Normalize(forward);
+}
 
-    bool manual_roll = false;
+static inline void _rotate_camera(Vector3 *up, const Vector3 &forward, f32 angle) noexcept
+{
+    const Matrix rot = MatrixRotate(forward, angle);
+
+    *up = Vector3Transform(*up, rot);
+}
+
+static inline void _advance_camera(Vector3 *position, const Vector3 &forward, f32 speed) noexcept
+{
+    *position = Vector3Add(*position, Vector3Scale(forward, speed));
+}
+
+static inline void _strafe_camera(Vector3 *position, const Vector3 &up, const Vector3 &forward, f32 speed) noexcept
+{
+    const Vector3 right = Vector3CrossProduct(forward, up);
+
+    *position = Vector3Subtract(*position, Vector3Scale(right, speed));
+}
+
+void zap::ZapCamera::update() noexcept
+{
+    const Vector3 forward = _get_forward(_camera.target, _camera.position);
+    constexpr f32 rotation_speed = 0.025f;
+    constexpr f32 movement_speed = 0.1f;
 
     if (IsKeyDown(KEY_Q)) {
-        const Matrix rot = MatrixRotate(forward, -ROTATION_SPEED);
-        _camera.up = Vector3Transform(_camera.up, rot);
-        manual_roll = true;
+        _rotate_camera(&_camera.up, forward, -rotation_speed);
     }
     if (IsKeyDown(KEY_E)) {
-        const Matrix rot = MatrixRotate(forward, ROTATION_SPEED);
-        _camera.up = Vector3Transform(_camera.up, rot);
-        manual_roll = true;
+        _rotate_camera(&_camera.up, forward, rotation_speed);
     }
-
-    if (manual_roll) {
-        _camera.target = Vector3Add(_camera.position, forward);
-        return;
+    if (IsKeyDown(KEY_W)) {
+        _advance_camera(&_camera.position, forward, movement_speed);
     }
-    UpdateCamera(&_camera, mode);
+    if (IsKeyDown(KEY_S)) {
+        _advance_camera(&_camera.position, forward, -movement_speed);
+    }
+    if (IsKeyDown(KEY_A)) {
+        _strafe_camera(&_camera.position, _camera.up, forward, movement_speed);
+    }
+    if (IsKeyDown(KEY_D)) {
+        _strafe_camera(&_camera.position, _camera.up, forward, -movement_speed);
+    }
+    _camera.target = Vector3Add(_camera.position, forward);
 }
 
 bool zap::ZapCamera::sees(const Vector3 &position) const noexcept
