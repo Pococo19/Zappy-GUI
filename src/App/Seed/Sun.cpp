@@ -6,11 +6,12 @@
 */
 
 #include <App/Seed/Create.hpp>
-#include <App/Sun/Sun.hpp>
+#include <App/Stars/Sun.hpp>
 
-void zappy::create::sun(std::shared_ptr<zap::render::Scene> &scene, std::shared_ptr<zap::ZapCamera> &camera, const f32 radius)
+void zappy::create::sun(std::shared_ptr<zap::render::Scene> &scene, std::shared_ptr<zap::ZapCamera> &camera, std::shared_ptr<BasePlanet> planet)
 {
-    auto sun = std::make_shared<zappy::Sun>(camera, radius);
+    auto sun = std::make_shared<zappy::Sun>(camera, planet->getRadius());
 
+    sun->addPlanet(planet);
     scene->add(sun);
 }
