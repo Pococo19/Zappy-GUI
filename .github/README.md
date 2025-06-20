@@ -6,7 +6,7 @@
 
 <p align="center">
   🎮 Zappy-GUI 🎮<br>
-  A GUI for the Zappy end of year project
+  A space-simulation GUI for the Zappy end of year project
 </p>
 
 ---
