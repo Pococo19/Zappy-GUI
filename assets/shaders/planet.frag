@@ -25,13 +25,13 @@
 */
 
 struct Fragment {
-    vec3 position;
-    vec3 normal;
-    vec2 texCoord;
-    vec4 color;
+    vec3    position;
+    vec3    normal;
+    vec2    texCoord;
+    vec4    color;
 };
 
-in Fragment frag;
+in Fragment     frag;
 
 /**
 * uniform variables

@@ -12,32 +12,32 @@
 */
 
 struct Fragment {
-    vec3 position;
-    vec3 normal;
-    vec2 texCoord;
+    vec3    position;
+    vec3    normal;
+    vec2    texCoord;
 };
 
 /**
 * input variables for vertex shader
 */
 
-in vec3 vertexPosition;
-in vec3 vertexNormal;
-in vec2 vertexTexCoord;
+in vec3     vertexPosition;
+in vec3     vertexNormal;
+in vec2     vertexTexCoord;
 
 /**
 * uniform variables for transformation matrices and time
 */
 
-uniform mat4 mvp;
-uniform mat4 matModel;
-uniform float time;
+uniform mat4    mvp;
+uniform mat4    matModel;
+uniform float   time;
 
 /**
 * output fragment data 
 */
 
-out Fragment frag;
+out Fragment    frag;
 
 /**
 * get fragment data from vertex attributes and transformation matrices
@@ -46,16 +46,16 @@ Fragment _get_fragment_data(vec3 pos)
 {
     Fragment f;
 
-    f.position = vec3(matModel * vec4(pos, 1.0));
-    f.normal = normalize(vec3(matModel * vec4(vertexNormal, 0.0)));
-    f.texCoord = vertexTexCoord;
+    f.position  = vec3(matModel * vec4(pos, 1.0));
+    f.normal    = normalize(vec3(matModel * vec4(vertexNormal, 0.0)));
+    f.texCoord  = vertexTexCoord;
     return f;
 }
 
 void main()
 {
     /** subtle vertex displacement for surface movement */
-    vec3 pos = vertexPosition;
+    vec3 pos    = vertexPosition;
     
     /** using sine functions to create a wave-like effect */
     float wave1 = sin(pos.x * 8.0 + time * 2.0) * 0.02;
