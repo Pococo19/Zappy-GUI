@@ -39,7 +39,7 @@ class ZapCamera final : public abstract::NonCopyable
 
         f32 _move_speed = 5.0f;
         f32 _rotation_speed = 2.0f;
-        f32 _pan_speed = 0.2f;
+        f32 _pan_speed = 2.0f;
 };
 
 }// namespace zap

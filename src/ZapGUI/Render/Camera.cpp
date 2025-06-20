@@ -27,6 +27,8 @@ RLAPI void CameraMoveUp(Camera *camera, float distance);
 RLAPI void CameraMoveRight(Camera *camera, float distance, bool moveInWorldPlane);
 RLAPI void CameraMoveToTarget(Camera *camera, float delta);
 RLAPI void CameraRoll(Camera *camera, float angle);
+RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
+RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
 }
 
 /**
@@ -51,10 +53,6 @@ zap::ZapCamera::ZapCamera() noexcept
     return Vector3Normalize(Vector3Subtract(target, position));
 }
 
-/**
- * public update events method
- */
-
 void zap::ZapCamera::update() noexcept
 {
     const Vector2 delta = GetMouseDelta();
@@ -62,20 +60,10 @@ void zap::ZapCamera::update() noexcept
 
     const f32 move_speed = _move_speed * time;
     const f32 rotation_speed = _rotation_speed * time;
-    const f32 camera_pan_speed = _pan_speed * time;
 
-    if (delta.x > ZAP_NO_COMPUTE) {
-        CameraMoveRight(&_camera, camera_pan_speed, true);
-    }
-    if (delta.x < -ZAP_NO_COMPUTE) {
-        CameraMoveRight(&_camera, -camera_pan_speed, true);
-    }
-    if (delta.y > ZAP_NO_COMPUTE) {
-        CameraMoveUp(&_camera, -camera_pan_speed);
-    }
-    if (delta.y < -ZAP_NO_COMPUTE) {
-        CameraMoveUp(&_camera, camera_pan_speed);
-    }
+    CameraYaw(&_camera, -delta.x * 0.003f, false);
+    CameraPitch(&_camera, -delta.y * 0.003f, true, false, false);
+
     if (IsKeyDown(KEY_Q)) {
         CameraRoll(&_camera, -rotation_speed);
     }
@@ -93,6 +81,12 @@ void zap::ZapCamera::update() noexcept
     }
     if (IsKeyDown(KEY_D)) {
         CameraMoveRight(&_camera, move_speed, true);
+    }
+    if (IsKeyDown(KEY_SPACE)) {
+        CameraMoveUp(&_camera, move_speed);
+    }
+    if (IsKeyDown(KEY_LEFT_CONTROL)) {
+        CameraMoveUp(&_camera, -move_speed);
     }
     CameraMoveToTarget(&_camera, -GetMouseWheelMove());
 }
