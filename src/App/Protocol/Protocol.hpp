@@ -10,12 +10,12 @@
 #include <ZapGUI/Network/NetworkClient.hpp>
 #include <ZapGUI/Types.hpp>
 
-#include <bits/this_thread_sleep.h>
 #include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
