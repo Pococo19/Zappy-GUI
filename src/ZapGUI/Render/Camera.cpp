@@ -25,6 +25,9 @@
  * rcamera api call
  */
 
+#if !defined(RCAMERA_H)
+    #define RCAMERA_H
+
 extern "C" {
 RLAPI void CameraMoveForward(Camera *camera, float distance, bool moveInWorldPlane);
 RLAPI void CameraMoveUp(Camera *camera, float distance);
@@ -34,6 +37,8 @@ RLAPI void CameraRoll(Camera *camera, float angle);
 RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
 RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
 }
+
+#endif
 
 /**
 * public
