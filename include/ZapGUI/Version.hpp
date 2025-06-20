@@ -8,5 +8,5 @@
 #pragma once
 
 #ifndef ZAP_GUI_VERSION
-    #define ZAP_GUI_VERSION "0.0.2"
+    #define ZAP_GUI_VERSION "0.1.1"
 #endif
