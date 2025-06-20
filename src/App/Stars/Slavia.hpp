@@ -22,7 +22,6 @@ class Slavia final : public BasePlanet
     private:
         void _init(const f32 zappy_radius);
 
-        f32 _elapsed = 0.f;
         f32 _rotation = 0.f;
         f32 _zappy_radius = 0.f;
 };
