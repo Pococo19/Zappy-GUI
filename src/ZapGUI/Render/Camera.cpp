@@ -11,11 +11,15 @@
 * @brief Camera is a C struct, so we need to wrap it in a C++ class
 */
 
-#define ZAP_NO_COMPUTE 0.f
-#define ZAP_PITCH_NULL 0.f
-#define ZAP_YAW_NULL 0.f
-#define ZAP_DEFAULT_SENSITIVITY 0.005f
-#define ZAP_ROTATION_AXIS {0.0f, 1.0f, 0.0f}
+#if !defined(ZAP_CUSTOM_CAMERA)
+    #define ZAP_NO_COMPUTE 0.f
+    #define ZAP_PITCH_NULL 0.f
+    #define ZAP_YAW_NULL 0.f
+    #define ZAP_SPRINT_SPEED 2.5f
+    #define ZAP_NO_SPRINT_SPEED 1.f
+    #define ZAP_DEFAULT_SENSITIVITY 0.005f
+    #define ZAP_ROTATION_AXIS {0.f, 1.f, 0.f}
+#endif
 
 /**
  * rcamera api call
@@ -37,10 +41,10 @@ RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAr
 
 zap::ZapCamera::ZapCamera() noexcept
 {
-    _camera.position = {4.0f, 4.0f, 4.0f};
-    _camera.target = {0.0f, 0.0f, 0.0f};
-    _camera.up = {0.0f, 1.0f, 0.0f};
-    _camera.fovy = 70.0f;
+    _camera.position = {4.f, 4.f, 4.f};
+    _camera.target = {0.f, 0.f, 0.f};
+    _camera.up = {0.f, 1.f, 0.f};
+    _camera.fovy = 70.f;
     _camera.projection = CAMERA_PERSPECTIVE;
 }
 
@@ -58,11 +62,13 @@ void zap::ZapCamera::update() noexcept
     const Vector2 delta = GetMouseDelta();
     const f32 time = GetFrameTime();
 
-    const f32 move_speed = _move_speed * time;
-    const f32 rotation_speed = _rotation_speed * time;
+    const bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 
-    CameraYaw(&_camera, -delta.x * 0.003f, false);
-    CameraPitch(&_camera, -delta.y * 0.003f, true, false, false);
+    const f32 move_speed = _move_speed * time * (shift ? ZAP_SPRINT_SPEED : ZAP_NO_SPRINT_SPEED);
+    const f32 rotation_speed = _rotation_speed * time * (shift ? ZAP_SPRINT_SPEED : ZAP_NO_SPRINT_SPEED);
+
+    CameraYaw(&_camera, -delta.x * _sensitivity, false);
+    CameraPitch(&_camera, -delta.y * _sensitivity, true, false, false);
 
     if (IsKeyDown(KEY_Q)) {
         CameraRoll(&_camera, -rotation_speed);
