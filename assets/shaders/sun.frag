@@ -51,11 +51,11 @@ SunColorPalette _get_default_palette()
 {
     SunColorPalette palette;
 
-    palette.core    = vec3(1.0, 0.95, 0.8);   //<< hot white-yellow
-    palette.inner   = vec3(1.0, 0.85, 0.4);   //<< bright yellow
-    palette.middle  = vec3(1.0, 0.6, 0.2);    //<< orange
-    palette.outer   = vec3(1.0, 0.3, 0.1);    //<< red-orange
-    palette.corona  = vec3(1.0, 0.4, 0.0);    //<< deep red
+    palette.core    = vec3(1.0, 0.9, 0.7);    //<< hot white-yellow
+    palette.inner   = vec3(1.0, 0.75, 0.3);   //<< orange-yellow
+    palette.middle  = vec3(1.0, 0.5, 0.15);   //<< orange
+    palette.outer   = vec3(0.95, 0.25, 0.05); //<< red-orange
+    palette.corona  = vec3(0.9, 0.2, 0.0);    //<< crimson red
     return palette;
 }
 
@@ -74,26 +74,35 @@ void main()
 
     SunColorPalette sun = _get_default_palette();
 
-    /** gradient radial coloring */
-    float gradient1 = smoothstep(0.0, 0.3, radius);
-    float gradient2 = smoothstep(0.3, 0.6, radius);
-    float gradient3 = smoothstep(0.6, 0.9, radius);
+    /** gradient radial coloring orange/red transitions */
+    float gradient1 = smoothstep(0.0, 0.25, radius);
+    float gradient2 = smoothstep(0.25, 0.5, radius);
+    float gradient3 = smoothstep(0.5, 0.8, radius);
+    float gradient4 = smoothstep(0.7, 0.9, radius);
 
     vec3 sun_color  = mix(sun.core, sun.inner, gradient1);
     sun_color       = mix(sun_color, sun.middle, gradient2);
     sun_color       = mix(sun_color, sun.outer, gradient3);
+    sun_color       = mix(sun_color, sun.corona, gradient4 * 0.6);
+
+    /** orange/red in mid-range */
+    float orange_red= smoothstep(0.2, 0.6, radius) * (1.0 - smoothstep(0.6, 0.8, radius));
+    vec3 boost_color= vec3(1.0, 0.4, 0.1);
+    sun_color       = mix(sun_color, boost_color, orange_red * 0.4);
 
     float corona_in = smoothstep(0.4, 0.7, radius) * (1.0 - smoothstep(0.7, 1.0, radius));
-    sun_color       = mix(sun_color, sun.corona, corona_in * 0.3);
+    sun_color       = mix(sun_color, sun.corona, corona_in * 0.5);
 
     /** pulsation */
     float pulse     = 0.8 + 0.2 * sin(time * 2.0);
+    float temp_var  = 0.9 + 0.1 * sin(time * 1.5);
     sun_color *= pulse;
+    sun_color.rg *= temp_var;
 
     /** fresnel/chip highlight near edge */
     float fresnel   = 1.0 - dot(normalize(frag.normal), normalize(viewPos - frag.position));
     fresnel         = pow(fresnel, 2.0);
-    sun_color += vec3(0.3, 0.2, 0.0) * fresnel;
+    sun_color += vec3(0.4, 0.15, 0.0) * fresnel;
 
     /** sunspots (darker patches) */
     float spot1     = smoothstep(0.15, 0.25, length(frag.texCoord - vec2(0.3, 0.4)));
@@ -102,4 +111,3 @@ void main()
 
     finalColor      = vec4(sun_color, 1.0);
 }
-
