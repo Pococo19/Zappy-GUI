@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 GREEN="\033[1;32m"
 RED="\033[1;31m"
@@ -41,7 +41,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
         mesa \
         libxext \
         xorg \
-        cmake
+        cmake \
+        wget
 
     exit 0
 fi
@@ -67,7 +68,8 @@ case "$DISTRO" in
             libxext-dev \
             xorg-dev \
             gcc \
-            cmake
+            cmake \
+            wget
 
         ;;
     alpine)
@@ -83,7 +85,8 @@ case "$DISTRO" in
             libxext-dev \
             xorg-server-dev \
             gcc \
-            cmake
+            cmake \
+            wget
         ;;
     arch)
         _info "Arch Linux found, installing dependencies via pacman"
@@ -97,7 +100,8 @@ case "$DISTRO" in
             libxext \
             xorg-server-devel \
             gcc \
-            cmake
+            cmake \
+            wget
         ;;
     *)
         _error "Unsupported distribution" "Please add support for your distribution or use a supported one."
