@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Zappy-GUI
 ** File description:
-** CreateObjects.cpp
+** Create.cpp
 */
 
 #define ZAP_USE_RAYLIB_MATH
@@ -153,11 +153,11 @@ static void _create_tile_outlines(const zappy::protocol::GUI_Map &map, const f32
 /**
  * main entry point WARN: do not change the signature
  */
-std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GUI_Map &map)
+std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::Data &data)
 {
     auto scene = std::make_shared<zap::render::Scene>();
     auto camera = std::make_shared<zap::ZapCamera>();
-    auto planet = std::make_shared<zappy::Planet>(map, camera);
+    auto planet = std::make_shared<zappy::Planet>(data.map, camera);
     const f32 planet_radius = planet->getRadius();
     const Vector3 planet_position = planet->getPosition();
 
@@ -177,8 +177,8 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::GU
     planet->setCamera(camera);
     scene->add(planet);
 
-    create::rocks(map, scene, planet_radius + 0.05f);
-    create::trees(scene, {static_cast<u32>(map.front().size()), static_cast<u32>(map.size())}, planet_radius);
+    create::rocks(data.map, scene, planet_radius + 0.05f);
+    create::trees(scene, {static_cast<u32>(data.map.front().size()), static_cast<u32>(data.map.size())}, planet_radius);
     create::sun(scene, camera, planet);
 
     return scene;

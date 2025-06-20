@@ -67,8 +67,13 @@ const std::vector<T> parse(const std::string_view line, const u32 expected_count
 using GUI_Map = std::vector<std::vector<std::array<Resource, ZAP_MAX_RESOURCES>>>;
 using ParserFunc = std::function<void(const std::string &)>;
 
+struct Data {
+        GUI_Map map;
+        u32 time;
+        std::vector<std::string> teams;
+};
 extern bool _ready;
-extern GUI_Map _map;
+extern Data _data;
 static inline std::unordered_map<std::string, ParserFunc> _callbacks;
 
 #if defined(await)
@@ -81,7 +86,6 @@ static inline std::unordered_map<std::string, ParserFunc> _callbacks;
     }
 
 void init(std::shared_ptr<zap::NetworkClient> client);
-
-GUI_Map getMap();
+Data getData();
 
 }// namespace zappy::protocol
