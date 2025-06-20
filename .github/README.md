@@ -6,7 +6,7 @@
 
 <p align="center">
   🎮 Zappy-GUI 🎮<br>
-  A GUI for the Zappy end of year project
+  A space-simulation GUI for the Zappy end of year project
 </p>
 
 ---
@@ -59,7 +59,9 @@ cd ..
 
 ### Run and play!
 
-> TODO
+```bash
+./zappy_gui -p <server-port> -h <server-ip>
+```
 
 ---
 
@@ -71,13 +73,15 @@ cd ..
 
 ## 🚀 Extra-Features
 
-> TODO
+- Everything is GPU-rendered by [**our shaders**](../assets/shaders/)
+- Every position in CPU-computed
+- The program runs in `two threads`, one for the `network client` and the other for the `graphical engine`.
 
 ---
 
 ## 🛠️ Development
 
-> TODO
+THANKS for developping with us ! See [**CODE OF CONDUCT**](./CODE_OF_CONDUCT.md) and [**CONTRIBUTING**](./CONTRIBUTING.md) for additional informations.
 
 ---
 
@@ -95,4 +99,4 @@ cd ..
 ## License
 
 Project developed as part of the B-YEP-400 module at EPITECH.
-See [**LICENSE**](/LICENSE.md).
+See [**LICENSE**](/LICENSE).
