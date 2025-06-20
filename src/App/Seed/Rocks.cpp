@@ -5,7 +5,6 @@
 ** Rocks.cpp
 */
 
-#include "ZapGUI/Threads.hpp"
 #include <App/Maths/Maths.hpp>
 #include <App/Seed/Create.hpp>
 
