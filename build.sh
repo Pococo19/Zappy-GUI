@@ -42,16 +42,17 @@ function _check_assets()
     local required_ext=("obj" "mtl" "png")
     local missing=0
 
+    cd .. || _error "cd failed"
     for ext in "${required_ext[@]}"; do
         if ! find assets -type f -name "*.${ext}" | grep -q .; then
             _info "No .${ext} files found in assets directory"
             _info "Running extraction script to generate them"
-            cd .. || _error "cd failed"
             _run_compression
         else
             _success "Found .${ext} files in assets directory"
         fi
     done
+    cd - || _error "cd failed"
 }
 
 function _base_run()

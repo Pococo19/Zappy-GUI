@@ -57,4 +57,11 @@ void zap::render::Scene::render()
         object->draw();
     }
     EndMode3D();
+
+    /** @brief 2D rendering is different in RayLib */
+    for (const auto &object : _objects) {
+        if (object->has2D()) {
+            object->draw2D();
+        }
+    }
 }

@@ -15,7 +15,15 @@ class Drawable
 {
     public:
         virtual ~Drawable() = default;
+
         virtual void draw() const = 0;
+        virtual void draw2D() const {};
+
+        virtual bool has2D() const
+        {
+            return false;
+        };
+
         virtual void update(const f32 dt) = 0;
 };
 
