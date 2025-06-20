@@ -24,7 +24,7 @@ class BasePlanet : public zap::ShaderModel
         explicit BasePlanet(std::shared_ptr<zap::ZapCamera>);
 
         void draw() const override;
-        void update() override;
+        void update(const f32 dt) override;
 
         f32 getRadius() const;
         Vector3 getPosition() const;
