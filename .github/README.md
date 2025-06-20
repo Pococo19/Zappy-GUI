@@ -15,6 +15,8 @@
 
 > TODO
 
+![Screenshot](assets/showcase.png)
+
 ### Group leaders
 
 > TODO
