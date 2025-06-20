@@ -24,11 +24,14 @@
 * input variables from vertex shader
 */
 
-in vec3     fragPosition;
-in vec3     fragNormal;
-in vec2     fragTexCoord;
-in vec4     fragColor;
-in vec3     worldPos;
+struct Fragment {
+    vec3 position;
+    vec3 normal;
+    vec2 texCoord;
+    vec4 color;
+};
+
+in Fragment frag;
 
 /**
 * uniform variables
@@ -107,15 +110,15 @@ float _day_night_gradient(vec3 lightPos, vec3 fragPos, vec3 normal)
 
 void main()
 {
-    vec3 normal         = normalize(fragNormal);
-    vec3 viewDir        = normalize(viewPos - fragPosition);
-    vec3 baseColor      = planetBaseColor * fragColor.rgb;
+    vec3 normal         = normalize(frag.normal);
+    vec3 viewDir        = normalize(viewPos - frag.position);
+    vec3 baseColor      = planetBaseColor * frag.color.rgb;
 
-    vec3 diffuse_light  = _diffuse_lighting(lightPos, lightColor, lightIntensity, fragPosition, normal);
+    vec3 diffuse_light  = _diffuse_lighting(lightPos, lightColor, lightIntensity, frag.position, normal);
     vec3 ambient_light  = _ambient_lighting();
-    vec3 atmo_glow      = _atmosphere_glow(lightPos, fragPosition, normal, viewDir);
+    vec3 atmo_glow      = _atmosphere_glow(lightPos, frag.position, normal, viewDir);
 
-    float dn_factor     = _day_night_gradient(lightPos, fragPosition, normal);
+    float dn_factor     = _day_night_gradient(lightPos, frag.position, normal);
 
     vec3 total_light    = diffuse_light + ambient_light;
 
@@ -126,7 +129,7 @@ void main()
     planet_color += atmo_glow;
 
 
-    vec3 light_dir      = normalize(lightPos - fragPosition);
+    vec3 light_dir      = normalize(lightPos - frag.position);
     float sun_angle     = dot(normal, light_dir);
     
     if (sun_angle > 0.0) {
@@ -135,7 +138,7 @@ void main()
         planet_color *= vec3(0.7, 0.8, 1.0);
     }
 
-    if (fragColor.b > fragColor.r && fragColor.b > fragColor.g) {
+    if (frag.color.b > frag.color.r && frag.color.b > frag.color.g) {
 
         vec3 reflect_dir= reflect(-light_dir, normal);
         float spec      = pow(max(dot(viewDir, reflect_dir), 0.0), 32.0);
