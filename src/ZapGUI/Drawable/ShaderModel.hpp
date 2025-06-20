@@ -23,8 +23,6 @@ class ShaderModel : public abstract::Drawable
         void update() override;
 
     protected:
-        void _init();
-
         std::shared_ptr<ZapModel> _model;
         std::shared_ptr<ZapCamera> _camera;
         Shader _shader;
