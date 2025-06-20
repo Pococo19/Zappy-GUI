@@ -13,6 +13,7 @@
 #if !defined(ZAP_SHADER_SUN_ALREADY_DEFINED)
     #define ZAP_SHADER_SUN_VERT "assets/shaders/sun.vert"
     #define ZAP_SHADER_SUN_FRAG "assets/shaders/sun.frag"
+    #define ZAP_SUN_FLARE "assets/textures/sun_flare.png"
     #define ZAP_SHADER_SUN_ALREADY_DEFINED
 #endif
 
@@ -24,12 +25,16 @@ class Sun final : public zap::ShaderModel
         explicit Sun(const std::shared_ptr<zap::ZapCamera> &camera, const f32 zappy_radius);
 
         void draw() const override;
+        void draw2D() const override;
         void update(const f32 dt) override;
+        bool has2D() const override;
 
         void addPlanet(const std::shared_ptr<zappy::BasePlanet> &planet);
 
     private:
         void _init();
+
+        Texture2D _sun_flare;
 
         f32 _rotation = 0.0f;
         i32 _timeLoc = 0;
