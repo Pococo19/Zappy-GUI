@@ -39,6 +39,7 @@ static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, 
 
 void rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::render::Scene> &out_scene, const f32 radius);
 void trees(std::shared_ptr<zap::render::Scene> &out_scene, const Vector2u &map_size, const f32 radius);
+void player(std::shared_ptr<zap::render::Scene> &scene, const f32 radius, const u32 width, const u32 height);
 void system(std::shared_ptr<zap::render::Scene> &out_scene, std::shared_ptr<zap::ZapCamera> &camera, std::shared_ptr<BasePlanet> zappy);
 
 }// namespace zappy::create
