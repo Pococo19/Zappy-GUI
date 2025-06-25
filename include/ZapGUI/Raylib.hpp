@@ -8,6 +8,7 @@
 #pragma once
 
 // clang-format off
+#include <ostream>
 #if defined(__clang__)
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wundef"
@@ -35,3 +36,15 @@
     #pragma GCC diagnostic pop
 #endif
 // clang-format on
+
+static inline std::ostream &operator<<(std::ostream &os, const Vector2 &v)
+{
+    os << "{" << v.x << ", " << v.y << "}";
+    return os;
+}
+
+static inline std::ostream &operator<<(std::ostream &os, const Vector3 &v)
+{
+    os << "{" << v.x << ", " << v.y << ", " << v.z << "}";
+    return os;
+}

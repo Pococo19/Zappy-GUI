@@ -7,7 +7,6 @@
 
 #include <ZapGUI/Drawable/ModelBase.hpp>
 #include <ZapGUI/Filename.hpp>
-#include <ZapGUI/Logger.hpp>
 
 #include <filesystem>
 #include <unordered_map>
@@ -163,13 +162,10 @@ void zap::abstract::ModelBase::_load_textures(const std::string &obj_file, const
     const std::vector<MaterialInfo> materials = _parse_mtl_file(mtl_file, texture_directory);
 
     if (materials.empty()) {
-        logger::debug("ModelBase::_load_textures", "No materials found in MTL file: ", mtl_file);
         return;
     }
 
     _bind_textures(materials);
-
-    logger::debug("ModelBase::_load_textures", "Texture loading completed for ", obj_file);
 }
 
 /**
@@ -184,15 +180,11 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
 
         const MaterialInfo &material = materials[i];
 
-        logger::task_start("processing material: ", material.name);
-
         if (!material.diffuse_map.empty()) {
-            logger::task_start("loading diffuse texture: ", material.diffuse_map);
 
             if (_texture_cache.find(material.diffuse_map) != _texture_cache.end()) {
                 /** @brief reuse cached texture */
                 _model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = _texture_cache[material.diffuse_map];
-                logger::task_done("reusing cached diffuse texture for material ", material.name);
                 continue;
             }
 
@@ -211,7 +203,6 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
                     _texture = diffuse_texture;
                 }
 
-                logger::task_done("successfully loaded diffuse texture for material ", material.name);
             } else {
                 throw exception::Error("ModelBase::_bind_textures", "Failed to load diffuse texture: ", material.diffuse_map);
             }
@@ -219,12 +210,10 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
 
         /** @brief load normal texture if normal map is present */
         if (!material.normal_map.empty()) {
-            logger::task_start("loading normal texture: ", material.normal_map);
 
             if (_texture_cache.find(material.normal_map) != _texture_cache.end()) {
                 /** @brief reuse cached texture */
                 _model.materials[i].maps[MATERIAL_MAP_NORMAL].texture = _texture_cache[material.normal_map];
-                logger::task_done("reusing cached normal texture for material ", material.name);
                 continue;
             }
 
@@ -236,7 +225,6 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
                 _texture_cache[material.normal_map] = normal_texture;
 
                 _model.materials[i].maps[MATERIAL_MAP_NORMAL].texture = normal_texture;
-                logger::task_done("successfully loaded normal texture for material ", material.name);
             } else {
                 throw exception::Error("ModelBase::_bind_textures", "Failed to load normal texture: ", material.normal_map);
             }
@@ -244,18 +232,14 @@ void zap::abstract::ModelBase::_bind_textures(const std::vector<MaterialInfo> &m
 
         /** @brief load alpha texture if alpha map is present */
         if (!material.alpha_map.empty()) {
-            logger::task_start("loading alpha texture: ", material.alpha_map);
 
             Texture2D alpha_texture = LoadTexture(material.alpha_map.c_str());
 
             if (alpha_texture.id != 0) {
                 _model.materials[i].maps[MATERIAL_MAP_METALNESS].texture = alpha_texture;
-                logger::task_done("successfully loaded alpha texture for material ", material.name);
             } else {
                 throw exception::Error("ModelBase::_bind_textures", "Failed to load alpha texture: ", material.alpha_map);
             }
         }
-
-        logger::task_done("processing material: ", material.name);
     }
 }

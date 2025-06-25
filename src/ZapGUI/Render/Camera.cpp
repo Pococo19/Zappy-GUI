@@ -5,6 +5,7 @@
 ** Camera.cpp
 */
 
+#include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Render/Camera.hpp>
 
 /**
@@ -44,6 +45,8 @@ RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAr
 * public
 */
 
+#include <iostream>
+
 zap::ZapCamera::ZapCamera() noexcept
 {
     _camera.position = {4.f, 4.f, 4.f};
@@ -51,6 +54,12 @@ zap::ZapCamera::ZapCamera() noexcept
     _camera.up = {0.f, 1.f, 0.f};
     _camera.fovy = 70.f;
     _camera.projection = CAMERA_PERSPECTIVE;
+
+    event::EventCallback::getInstance().add(KEY_P, [&]() { std::cout << "pos: " << _camera.position << std::endl; });
+    event::EventCallback::getInstance().add(KEY_R, [&]() {
+        _camera.position = {4.f, 4.f, 4.f};
+        _camera.target = {0.f, 0.f, 0.f};
+    });
 }
 
 /**

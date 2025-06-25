@@ -22,13 +22,12 @@ static const std::vector<std::string> _rocks_models = {
     zap::Filename::getPath("assets/models/Pebble_Square_6.obj"),
 };
 
-static void _push_resource(const zappy::protocol::Resource &resource, std::shared_ptr<zap::render::Scene> &out_scene, const Vector3 &position)
+static void _push_resource(const zappy::protocol::Resource &resource, std::shared_ptr<zap::render::Scene> &out_scene, const Vector3 &position, const Vector3 &scale)
 {
     constexpr u64 size = sizeof(_rocks_models) / sizeof(_rocks_models[0]);
     constexpr f32 offset_range = 0.02f;// << small offset to keep resources within tile bounds
     constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
     constexpr Vector3 up = {0.0f, 1.0f, 0.0f};
-    constexpr f32 scale = 0.6f;
 
     for (u32 instance = 0; instance < resource.quantity; ++instance) {
         const f32 random_x = zappy::maths::random<f32>(-offset_range, offset_range);
@@ -47,7 +46,7 @@ static void _push_resource(const zappy::protocol::Resource &resource, std::share
             model->setRotationAxis(axis, angle * RAD2DEG);
         }
 
-        model->setScale({scale, scale, scale});
+        model->setScale(scale);
         out_scene->add(model);
     }
 }
@@ -56,6 +55,7 @@ void zappy::create::rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::ren
 {
     const u32 width = static_cast<u32>(map.front().size());
     const u32 height = static_cast<u32>(map.size());
+    const Vector3 scale = get_scale(radius, width, height, 15);
 
     for (u32 y = 0; y < height; ++y) {
         for (u32 x = 0; x < width; ++x) {
@@ -71,7 +71,7 @@ void zappy::create::rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::ren
                     continue;
                 }
 
-                _push_resource(resource, out_scene, base_position);
+                _push_resource(resource, out_scene, base_position, scale);
             }
         }
     }

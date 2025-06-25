@@ -63,3 +63,6 @@ zappy_gui
 *.mtl
 *.obj
 *.cc
+*.glb
+
+test.cpp
