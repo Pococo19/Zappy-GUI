@@ -5,13 +5,16 @@
 ** Protocol.cpp
 */
 
-#include "App/Protocol/Callback.hpp"
-#include <App/Protocol/Protocol.hpp>
+#ifndef ZAP_USE_RAYLIB_MATH
+    #define ZAP_USE_RAYLIB_MATH
+#endif
 
-#include <ZapGUI/Error.hpp>
+#include <App/AI/PlayerManager.hpp>
+#include <App/Protocol/Callback.hpp>
+#include <App/Seed/Create.hpp>
+
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Threads.hpp>
-#include <iostream>
 
 /**
  * async function to run the client in a separate thread
@@ -54,6 +57,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
 
     callback.clear();
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
     * @brief WELCOME -> GRAPHIC
     */
@@ -61,6 +66,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         zap::logger::debug("Received WELCOME command, sending GRAPHIC");
         net->send("GRAPHIC\n");
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     * @brief MSZ -> [x, y]
@@ -78,6 +85,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         _ready = false;
         zap::logger::debug("Map initialized, expecting ", _max_tiles, " tiles");
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     * @brief BCT -> [x, y, food, linemate, deraumere, sibur, mendiane, phiras, thystame]
@@ -120,6 +129,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         }
     });
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     /** @brief SGT -> [time] */
     callback.add("sgt", [](const std::string &data) -> void {
         const auto time = protocol::parse<u32>(data, 1);
@@ -132,6 +143,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         _data.time = time.front();
     });
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     /** @brief TNA -> [team_name] */
     callback.add("tna", [](const std::string &data) -> void {
         const auto team_name = protocol::parse<std::string>(data, 1);
@@ -143,6 +156,8 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         std::lock_guard<std::mutex> lock(_data_mutex);
         _data.teams.push_back(team_name.front());
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /** @brief ENW -> [egg_id, player_id, x, y] */
     callback.add("enw", [](const std::string &data) -> void {
@@ -159,6 +174,48 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
 
         zap::logger::recv("Egg spawned with ID: ", egg_id, ", Player ID: ", player_id, ", at coordinates (", x, ", ", y, ")");
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    protocol::Callback::getInstance().add("pnw", [](const std::string &data) -> void {
+        if (!protocol::_ready) {
+            await
+        }
+
+        const auto params = protocol::parse<std::string>(data, 6);
+
+        if (params.size() < 6) {
+            return;
+        }
+
+        f32 angle;
+
+        const u32 size_x = static_cast<u32>(_data.map.size());
+        const u32 size_y = static_cast<u32>(_data.map[0].size());
+        const f32 radius = maths::radius(size_x, size_y);
+
+        const std::string id = params[0];
+        const Vector2f base = {std::stof(params[1]), std::stof(params[2])};
+        const Vector3 scale = create::get_scale(radius, size_x, size_y, 500.f);
+        const Vector3 pos = maths::to_3D(base, {size_x, size_y}, radius);
+        const Vector3 r = maths::rotation(pos, &angle, false);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+        zap::thread::Queue::getInstance().push([id, pos, scale, r, angle](zap::render::Scene *scene) {
+            const auto player = std::make_shared<zappy::ai::Player>(id);
+
+            player->setPosition(pos);
+            player->setScale(scale);
+            player->setRotationAxis(r, angle);
+            ai::_player_map.insert({id, player});
+            scene->add(player);
+        });
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     * @brief set callback for receiving commands from the server

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ZapGUI/Render/Scene.hpp"
 #include <ZapGUI/NonCopyable.hpp>
 #include <functional>
 #include <queue>
@@ -31,14 +32,17 @@ namespace zap::thread {
 class Queue final : public abstract::NonCopyable
 {
     public:
-        static Queue &getInstance();
-
         void push(std::function<void()> task);
+        void push(std::function<void(render::Scene *scene)> task);
+
         void execute();
+        void consume(render::Scene *scene);
+
+        static Queue &getInstance();
 
     private:
         std::mutex _mutex;
         std::queue<std::function<void()>> _tasks;
+        std::queue<std::function<void(render::Scene *scene)>> _scene_tasks;
 };
-
 }// namespace zap::thread

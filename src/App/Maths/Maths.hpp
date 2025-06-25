@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <random>
 
+#define PI_2 (2.f * PI)
+#define ALMOST_ONE 0.999999f
+
 // clang-format off
 namespace zappy::maths {
 
@@ -30,7 +33,7 @@ namespace zappy::maths {
  */
 [[nodiscard]] static const inline Vector3 to_sphere(const Vector2f &uv, const f32 radius)
 {
-    const f32 theta = uv._x * 2.0f * PI;//<< longitude θ ∈ [0,2π]
+    const f32 theta = uv._x * 2.f * PI;//<< longitude θ ∈ [0,2π]
     const f32 phi = uv._y * PI;         //<< latitude (θ ∈ π)
 
     /** @brief cartesian coordinates from spherical coordinates */
@@ -52,31 +55,20 @@ namespace zappy::maths {
 
     return {
         orbit_radius * cosf(time * speed),
-        0.0f,
+        0.f,
         (orbit_radius * 0.8f) * sinf(time * speed)
     };
 }
 
 /**
-* @brief calculates the rotation
-*
-* axis = orientation × position
-* angle = acos(orientation ⋅ position)
-*/
-[[nodiscard]] static inline Vector3 rotation(const Vector3 &position, const Vector3 &orientation, f32 *out_angle)
+ * @brief radius
+ */
+[[nodiscard]] static inline f32 radius(const u64 w, const u64 h)
 {
-    const Vector3 axis = Vector3CrossProduct(orientation, position);
-    const f32 angle = acosf(Vector3DotProduct(orientation, position));
+    const f32 width = static_cast<f32>(w);
+    const f32 height = static_cast<f32>(h);
 
-    if (Vector3Length(axis) > EPSILON) {
-        *out_angle = angle * RAD2DEG;
-        return {
-            axis.x,
-            axis.y,
-            axis.z,
-        };
-    }
-    return {0.0f, 0.0f, 0.0f};
+    return std::max(width, height) / (PI_2);
 }
 
 /**
@@ -94,31 +86,40 @@ namespace zappy::maths {
     };
 }
 
-
 /**
 * @brief calculates the rotation axis and angle between two vectors
 *
 *   axis = up × normalized
 *   angle = acos(up ⋅ normalized)
 */
-[[nodiscard]] static inline Vector3 rotation(const Vector3 &position, f32 *out_angle)
+[[nodiscard]] static inline Vector3 rotation(const Vector3 &position, f32 *out_angle, const bool use_up = true)
 {
-    constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
-    constexpr Vector3 up = {0.0f, 1.0f, 0.0f};
-    const Vector3 normalized = Vector3Normalize(Vector3Subtract(position, center));
-    const Vector3 axis = Vector3CrossProduct(up, normalized);
-    const f32 angle = acosf(Vector3DotProduct(up, normalized));
+    constexpr Vector3 center = {0.f, 0.f, 0.f};
+    constexpr Vector3 up = {0.f, 1.f, 0.f};
 
+    const Vector3 normalized = Vector3Normalize(Vector3Subtract(position, center));
+    Vector3 model_up;
+
+    if (use_up) {
+        model_up = up;
+    } else {
+        model_up = {0.f, 0.f, -1.f};
+    }
+
+    const Vector3 axis = Vector3CrossProduct(model_up, normalized);
+    const f32 angle = acosf(Vector3DotProduct(model_up, normalized));
+    const f32 dot = Vector3DotProduct(model_up, normalized);
+
+    if (abs(dot) > ALMOST_ONE) {
+        *out_angle = 0.f;
+        return {0.f, 0.f, 1.f};
+    }
     if (Vector3Length(axis) > EPSILON) {
         *out_angle = angle * RAD2DEG;
-        return {
-            axis.x,
-            axis.y,
-            axis.z,
-        };
+        return Vector3Normalize(axis);
     }
-    *out_angle = 0.0f;
-    return {0.0f, 0.0f, 0.0f};
+    *out_angle = 0.f;
+    return {0.f, 0.f, 1.f};
 }
 
 /**
@@ -131,15 +132,15 @@ namespace zappy::maths {
 */
 static const inline Vector2u get_tiles(const Vector3 &vertex, const f32 length, const Vector2u &width_height)
 {
-    const Vector3 normalized = Vector3Scale(vertex, 1.0f / length);
+    const Vector3 normalized = Vector3Scale(vertex, 1.f / length);
     const f32 theta = atan2f(normalized.z, normalized.x);
-    const f32 phi = acosf(std::clamp(normalized.y, -1.0f, 1.0f));
-    const f32 u = (theta + PI) / (2.0f * PI);
+    const f32 phi = acosf(std::clamp(normalized.y, -1.f, 1.f));
+    const f32 u = (theta + PI) / (2.f * PI);
     const f32 v = phi / PI;
 
     return Vector2u{
-        static_cast<u32>(std::clamp(u * static_cast<f32>(width_height._x), 0.0f, static_cast<f32>(width_height._x - 1))),
-        static_cast<u32>(std::clamp(v * static_cast<f32>(width_height._y), 0.0f, static_cast<f32>(width_height._y - 1)))
+        static_cast<u32>(std::clamp(u * static_cast<f32>(width_height._x), 0.f, static_cast<f32>(width_height._x - 1))),
+        static_cast<u32>(std::clamp(v * static_cast<f32>(width_height._y), 0.f, static_cast<f32>(width_height._y - 1)))
     };
 }
 
