@@ -13,10 +13,10 @@ void zappy::create::system(std::shared_ptr<zap::render::Scene> &scene, std::shar
 {
     const f32 zappy_radius = zappy->getRadius();
 
-    auto sun = std::make_shared<zappy::Sun>(camera, zappy_radius);
+    const auto sun = std::make_shared<zappy::Sun>(camera, zappy_radius);
     sun->addPlanet(zappy);
 
-    auto slavia = std::make_shared<zappy::Slavia>(camera, zappy_radius);
+    const auto slavia = std::make_shared<zappy::Slavia>(camera, zappy_radius);
     sun->addPlanet(slavia);
 
     scene->add(slavia);

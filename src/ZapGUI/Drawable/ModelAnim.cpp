@@ -7,11 +7,9 @@
 
 #include <ZapGUI/Drawable/ModelAnim.hpp>
 #include <ZapGUI/Error.hpp>
+#include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Filename.hpp>
 #include <ZapGUI/Macro.hpp>
-#include "ModelAnim.hpp"
-
-#define ZAP_USE_RAYLIB_MATH
 
 /*
 * public
@@ -20,15 +18,6 @@
 zap::ZapModelAnim::ZapModelAnim(const std::string &glb_path)
 {
     _load_glb_animated(glb_path);
-}
-
-zap::ZapModelAnim::ZapModelAnim(const Model &model)
-{
-    _model = model;
-    if (_model.meshCount == 0) {
-        throw exception::Error("ZapModelAnim::ZapModelAnim", "Failed to load model from provided Model object");
-    }
-    _texture.id = 0;
 }
 
 zap::ZapModelAnim::~ZapModelAnim()
@@ -46,11 +35,10 @@ void zap::ZapModelAnim::draw() const
 
 void zap::ZapModelAnim::update(const f32 UNUSED dt)
 {
-    if (_animations && _animCount > 0) {
-        _frame += dt * 24.0f;
-        if (_frame >= static_cast<f32>(_animations[0].frameCount)) _frame = 0.0f;
-        UpdateModelAnimation(_model, _animations[0], static_cast<int>(_frame));
-    }
+    const auto &anim = _animations[_anim_index];
+
+    _frame = (_frame + 1) % anim.frameCount;
+    UpdateModelAnimation(_model, anim, _frame);
 }
 
 /*
@@ -63,16 +51,14 @@ void zap::ZapModelAnim::_load_glb_animated(const std::string &glb_path)
         throw exception::Error("zap::ZapModelAnim::_load_glb_animated", "File not found: ", glb_path);
     }
 
-    _model = LoadModel(glb_path.c_str());
-    _animations = LoadModelAnimations(glb_path.c_str(), &_animCount);
+    const char *path = glb_path.c_str();
 
-    if (_model.meshCount == 0 || !_animations || _animCount == 0) {
+    _model = LoadModel(path);
+    _animations = LoadModelAnimations(path, &_anim_count);
+
+    if (_model.meshCount == 0 || !_animations || _anim_count == 0) {
         throw exception::Error("zap::ZapModelAnim::_load_glb_animated", "Failed to load model or animations: ", glb_path);
     }
 
-    _frame = 0;
-    _scale = Vector3{1.0f, 1.0f, 1.0f};
-    _tint = WHITE;
-    _rotationAxis = Vector3{0.0f, 1.0f, 0.0f};
-    _rotationAngle = 0.0f;
+    event::EventCallback::getInstance().add(KEY_RIGHT, [&]() { _anim_index = (_anim_index + 1) % _anim_count; });
 }

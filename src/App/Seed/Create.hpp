@@ -41,7 +41,7 @@ static inline bool is_too_close(const Vector3 &new_pos, f32 min_distance)
     return false;
 }
 
-static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, const Vector3 &position)
+[[nodiscard]] static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, const Vector3 &position)
 {
     const auto model = std::make_shared<zap::ZapModel>(obj_path, zap::Filename::getPath("assets/textures/"));
 
@@ -49,10 +49,11 @@ static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, 
     return model;
 }
 
-static inline std::shared_ptr<zap::ZapModelAnim> model_anim(const std::string &glb_path)
+[[nodiscard]] static inline std::shared_ptr<zap::ZapModelAnim> model_anim(const std::string &glb_path, const Vector3 &position)
 {
     const auto model = std::make_shared<zap::ZapModelAnim>(glb_path);
 
+    model->setPosition(position);
     return model;
 }
 
@@ -69,16 +70,16 @@ void seed(std::shared_ptr<zap::render::Scene> &scene, const std::vector<std::str
     return static_cast<u32>(surface / count);
 }
 
-[[nodiscard]] static inline constexpr Vector3 get_scale(const f32 radius, const u32 width, const u32 height)
+[[nodiscard]] static inline constexpr Vector3 get_scale(const f32 radius, const u32 width, const u32 height, const f32 offset = 10.f)
 {
-    const f32 scale_factor = std::max(static_cast<f32>(width), static_cast<f32>(height)) / (2.0f * radius) / 10;
+    const f32 scale_factor = std::max(static_cast<f32>(width), static_cast<f32>(height)) / (2.0f * radius) / offset;
 
     return {scale_factor, scale_factor, scale_factor};
 }
 
 void rocks(const protocol::GUI_Map &map, std::shared_ptr<zap::render::Scene> &out_scene, const f32 radius);
-void trees(std::shared_ptr<zap::render::Scene> &out_scene, const Vector2u &map_size, const f32 radius);
-void player(std::shared_ptr<zap::render::Scene> &scene, const f32 radius, const u32 width, const u32 height);
+void trees(std::shared_ptr<zap::render::Scene> &out_scene, const f32 radius, const Vector2u &map_size);
+void player(std::shared_ptr<zap::render::Scene> &scene, const f32 radius, const Vector2u &map_size);
 void system(std::shared_ptr<zap::render::Scene> &out_scene, std::shared_ptr<zap::ZapCamera> &camera, std::shared_ptr<BasePlanet> zappy);
 
 }// namespace zappy::create

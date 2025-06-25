@@ -27,10 +27,10 @@ static const std::vector<std::string> _flower_models = {
 };
 // clang-format on
 
-void zappy::create::trees(std::shared_ptr<zap::render::Scene> &out_scene, const Vector2u &map_size, const f32 radius)
+void zappy::create::trees(std::shared_ptr<zap::render::Scene> &out_scene, const f32 radius, const Vector2u &map_size)
 {
     const u32 count = get_count(radius);
-    const Vector3 scale = get_scale(radius, map_size._x, map_size._y);
+    const Vector3 scale = get_scale(radius, map_size._x, map_size._y, 15);
 
     seed(out_scene, _tree_models, radius, count, scale);
     seed(out_scene, _flower_models, radius, count * 4, scale);
