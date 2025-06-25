@@ -21,6 +21,7 @@
 #include <App/Maths/Maths.hpp>
 #include <App/Stars/BasePlanet.hpp>
 #include <ZapGUI/Drawable/Model.hpp>
+#include <ZapGUI/Drawable/ModelAnim.hpp>
 #include <ZapGUI/Filename.hpp>
 #include <ZapGUI/Render/Scene.hpp>
 
@@ -45,6 +46,13 @@ static inline std::shared_ptr<zap::ZapModel> model(const std::string &obj_path, 
     const auto model = std::make_shared<zap::ZapModel>(obj_path, zap::Filename::getPath("assets/textures/"));
 
     model->setPosition(position);
+    return model;
+}
+
+static inline std::shared_ptr<zap::ZapModelAnim> model_anim(const std::string &glb_path)
+{
+    const auto model = std::make_shared<zap::ZapModelAnim>(glb_path);
+
     return model;
 }
 

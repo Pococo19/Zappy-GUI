@@ -8,7 +8,7 @@
 #include <App/Seed/Create.hpp>
 
 static const std::vector<std::string> _player_models = {
-    zap::Filename::getPath("assets/models/Player2.obj"),
+    zap::Filename::getPath("assets/models/Bot.glb"),
 };
 
 void zappy::create::player(std::shared_ptr<zap::render::Scene> &scene, const f32 radius, const u32 width, const u32 height)
