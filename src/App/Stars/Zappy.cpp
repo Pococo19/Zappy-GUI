@@ -121,15 +121,13 @@ static Mesh _create_deformed_mesh(const zappy::protocol::GUI_Map &map, const f32
 
 void zappy::Zappy::_init(const protocol::GUI_Map &map)
 {
+    constexpr Vector3 position = {0.0f, 0.0f, 0.0f};
+
     if (map.empty() || map.front().empty()) {
         return;
     }
 
-    const f32 width = static_cast<f32>(map.front().size());
-    const f32 height = static_cast<f32>(map.size());
-    _radius = std::max(width, height) / (2.0f * PI);
-
-    constexpr Vector3 position = {0.0f, 0.0f, 0.0f};
+    _radius = maths::radius(map.front().size(), map.size());
 
     Mesh deformed_mesh = _create_deformed_mesh(map, _radius);
     UploadMesh(&deformed_mesh, false);

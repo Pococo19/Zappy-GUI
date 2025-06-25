@@ -73,9 +73,13 @@ Matrix zap::abstract::ModelBase::getTransform() const
 {
     Matrix transform = MatrixIdentity();
 
-    transform = MatrixTranslate(_position.x, _position.y, _position.z);
-    transform = MatrixScale(_scale.x, _scale.y, _scale.z);
-    transform = MatrixRotateXYZ({0.0f, 0.0f, 0.0f});
+    const Matrix scale = MatrixScale(_scale.x, _scale.y, _scale.z);
+    const Matrix rotation = MatrixRotate(_rotationAxis, _rotationAngle * DEG2RAD);
+    const Matrix translation = MatrixTranslate(_position.x, _position.y, _position.z);
+
+    /** @brief T * R * S */
+    transform = MatrixMultiply(scale, rotation);
+    transform = MatrixMultiply(transform, translation);
 
     return transform;
 }

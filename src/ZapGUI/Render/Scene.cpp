@@ -5,6 +5,7 @@
 ** Scene.cpp
 */
 
+#include "ZapGUI/Threads.hpp"
 #include <ZapGUI/Error.hpp>
 #include <ZapGUI/Render/Scene.hpp>
 
@@ -48,6 +49,7 @@ void zap::render::Scene::update(const f32 dt)
     for (const auto &object : _objects) {
         object->update(dt);
     }
+    thread::Queue::getInstance().consume(this);
 }
 
 void zap::render::Scene::render()

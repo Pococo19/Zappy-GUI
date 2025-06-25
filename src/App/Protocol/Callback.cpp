@@ -32,10 +32,12 @@ bool zappy::protocol::Callback::contains(const std::string &cmd) const
     return _commands.contains(cmd);
 }
 
+#pragma message("TODO: remove this message, this is just a temporary solution to avoid breaking the code")
 void zappy::protocol::Callback::call(const std::string &cmd, const std::string &data) const
 {
     if (!contains(cmd)) {
-        throw zap::exception::Error("Callback", "No callback registered for command: ", cmd);
+        return;
+        // throw zap::exception::Error("Callback", "No callback registered for command: ", cmd);
     }
     _commands.at(cmd)(data);
 }
