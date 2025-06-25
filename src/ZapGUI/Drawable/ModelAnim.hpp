@@ -12,7 +12,7 @@
 
 namespace zap {
 
-class ZapModelAnim final : public abstract::ModelBase, public abstract::Drawable
+class ZapModelAnim : public abstract::ModelBase, public abstract::Drawable
 {
 
     public:

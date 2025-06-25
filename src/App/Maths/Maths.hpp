@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <type_traits>
 #define ZAP_USE_RAYLIB_MATH
 #include <ZapGUI/Raylib.hpp>
+#include <type_traits>
 
 #include <ZapGUI/Types.hpp>
 #include <algorithm>

@@ -5,24 +5,29 @@
 ** Player.cpp
 */
 
+#define ZAP_USE_RAYLIB_MATH
+#include "App/Protocol/Callback.hpp"
+#include "ZapGUI/Error.hpp"
+#include <App/AI/Player.hpp>
 #include <App/Maths/Maths.hpp>
 #include <App/Seed/Create.hpp>
 
-static const std::string _player_models = {
-    zap::Filename::getPath("assets/models/Bot.glb"),
-};
+#include <iostream>
 
 void zappy::create::player(std::shared_ptr<zap::render::Scene> &scene, const f32 radius, const Vector2u &size)
 {
-    constexpr Vector2f vec2_pos = {7, 2};
-    const Vector2f uv = {vec2_pos._x / static_cast<f32>(size._x), vec2_pos._y / static_cast<f32>(size._y)};
-    const Vector3 scale = get_scale(radius, size._x, size._y, 500.f);
-    const Vector3 position = maths::to_sphere(uv, radius);
-    const auto mandela = model_anim(_player_models, position);
+    protocol::Callback::getInstance().add("pnw", [&](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 6);
 
-    mandela->setScale(scale);
-    constexpr f32 angle = 90;
-    constexpr Vector3 rotation = {1.f, 0.f, 0.f};
-    mandela->setRotationAxis(rotation, angle);
-    scene->add(mandela);
+        if (params.size() < 6) {
+            throw zap::exception::Error("PNW", "Invalid parameters count: ", params.size());
+        }
+
+        const std::string &id = params[0];
+        const Vector2f base = {std::stof(params[1]), std::stof(params[2])};
+        const Vector2f uv = {base._x / static_cast<f32>(size._x), base._y / static_cast<f32>(size._y)};
+        const Vector3 pos = maths::to_sphere(uv, radius);
+        std::cout << "Player " << id << " spawned at position: " << pos << std::endl;
+    });
+    (void) scene;
 }
