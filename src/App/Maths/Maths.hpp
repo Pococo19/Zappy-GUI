@@ -58,12 +58,50 @@ namespace zappy::maths {
 }
 
 /**
+* @brief calculates the rotation
+*
+* axis = orientation × position
+* angle = acos(orientation ⋅ position)
+*/
+[[nodiscard]] static inline Vector3 rotation(const Vector3 &position, const Vector3 &orientation, f32 *out_angle)
+{
+    const Vector3 axis = Vector3CrossProduct(orientation, position);
+    const f32 angle = acosf(Vector3DotProduct(orientation, position));
+
+    if (Vector3Length(axis) > EPSILON) {
+        *out_angle = angle * RAD2DEG;
+        return {
+            axis.x,
+            axis.y,
+            axis.z,
+        };
+    }
+    return {0.0f, 0.0f, 0.0f};
+}
+
+/**
+ * @brief 2D to 3D
+ */
+[[nodiscard]] static inline Vector3 to_3D(const Vector2f &pos_2d, const Vector2u &size, const f32 radius)
+{
+    const Vector2f uv = {pos_2d._x / float(size._x), pos_2d._y / float(size._y)};
+    const Vector3 pos = to_sphere(uv, radius);
+
+    return {
+        pos.x,
+        pos.y,
+        pos.z
+    };
+}
+
+
+/**
 * @brief calculates the rotation axis and angle between two vectors
 *
 *   axis = up × normalized
 *   angle = acos(up ⋅ normalized)
 */
-static inline Vector3 rotation(const Vector3 &position, f32 *out_angle)
+[[nodiscard]] static inline Vector3 rotation(const Vector3 &position, f32 *out_angle)
 {
     constexpr Vector3 center = {0.0f, 0.0f, 0.0f};
     constexpr Vector3 up = {0.0f, 1.0f, 0.0f};

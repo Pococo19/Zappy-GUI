@@ -8,6 +8,7 @@
 #include <ZapGUI/Engine/GameEngine.hpp>
 #include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Logger.hpp>
+#include <ZapGUI/Threads.hpp>
 
 /**
 * public
@@ -29,6 +30,7 @@ void zap::abstract::GameEngine::render()
 
 void zap::abstract::GameEngine::update()
 {
+    thread::Queue::getInstance().execute();
     const f32 dt = static_cast<f32>(GetTime());
 
     for (const auto &scene : _scenes) {

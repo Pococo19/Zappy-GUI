@@ -15,6 +15,7 @@ class Player final : public zap::ZapModelAnim
 {
     public:
         explicit Player(const std::string &id);
+        ~Player() override = default;
 
     private:
         std::string _id;

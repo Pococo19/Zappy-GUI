@@ -11,6 +11,7 @@
 #include <ZapGUI/Error.hpp>
 #include <ZapGUI/Logger.hpp>
 #include <ZapGUI/Threads.hpp>
+#include <iostream>
 
 /**
  * async function to run the client in a separate thread
