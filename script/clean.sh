@@ -8,6 +8,6 @@ if [ ! -f assets/textures/textures.zip ]; then
     python3 script/compression.py zip assets/textures assets/textures/textures.zip
 fi
 
-rm -rf assets/models/*.obj assets/models/*.mtl assets/textures/*.png
+rm -rf assets/models/*.obj assets/models/*.glb assets/models/*.mtl assets/textures/*.png
 
 echo "all clean!"
