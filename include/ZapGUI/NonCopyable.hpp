@@ -26,4 +26,5 @@ class NonCopyable
         constexpr NonCopyable &operator=(NonCopyable &&) = delete;
         constexpr NonCopyable &operator=(const NonCopyable &) = delete;
 };
+
 }// namespace zap::abstract

@@ -115,14 +115,12 @@ function _tests_run()
 function _clean()
 {
     rm -rf build
-    exit 0
 }
 
 function _fclean()
 {
     _clean
     rm -rf zappy_gui unit_tests plugins code_coverage.txt unit_tests-*.profraw unit_tests.profdata vgcore* cmake-build-debug
-    exit 0
 }
 
 for args in "$@"
@@ -147,9 +145,11 @@ EOF
         ;;
     -c|--clean)
         _clean
+        exit 0
         ;;
     -f|--fclean)
         _fclean
+        exit 0
         ;;
     -d|--debug)
         _debug

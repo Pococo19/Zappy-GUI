@@ -42,7 +42,7 @@ void zap::ZapModelAnim::update(const f32 UNUSED dt)
 }
 
 /*
-* static
+* private
 */
 
 void zap::ZapModelAnim::_load_glb_animated(const std::string &glb_path)

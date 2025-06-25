@@ -5,7 +5,7 @@
 ** Camera.cpp
 */
 
-#include "ZapGUI/Event/EventCallback.hpp"
+#include <ZapGUI/Event/EventCallback.hpp>
 #include <ZapGUI/Render/Camera.hpp>
 
 /**
