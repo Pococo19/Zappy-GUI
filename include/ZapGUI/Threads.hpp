@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <ZapGUI/NonCopyable.hpp>
+#include <functional>
+#include <queue>
 #include <thread>
 
 #ifdef async
@@ -22,3 +25,20 @@
         std::thread([=]() { func##_impl(args...); }).detach();                                                                                                           \
     }                                                                                                                                                                    \
     void func##_impl(__VA_ARGS__)
+
+namespace zap::thread {
+
+class Queue final : public abstract::NonCopyable
+{
+    public:
+        static Queue &getInstance();
+
+        void push(std::function<void()> task);
+        void execute();
+
+    private:
+        std::mutex _mutex;
+        std::queue<std::function<void()>> _tasks;
+};
+
+}// namespace zap::thread

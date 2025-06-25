@@ -16,7 +16,7 @@ std::shared_ptr<zap::render::Scene> zappy::_create_main_scene(const protocol::Da
 {
     auto scene = std::make_shared<zap::render::Scene>();
     auto camera = std::make_shared<zap::ZapCamera>();
-    auto zappy = std::make_shared<zappy::Zappy>(data.map, camera);
+    const auto zappy = std::make_shared<zappy::Zappy>(data.map, camera);
     const f32 zappy_radius = zappy->getRadius();
     const Vector3 zappy_position = zappy->getPosition();
     const u32 width = static_cast<u32>(data.map.front().size());
