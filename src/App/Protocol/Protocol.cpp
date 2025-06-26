@@ -7,6 +7,7 @@
 
 #ifndef ZAP_USE_RAYLIB_MATH
     #define ZAP_USE_RAYLIB_MATH
+    #include <string>
 #endif
 
 #include <App/AI/PlayerManager.hpp>
@@ -26,7 +27,7 @@ async(run_client, std::shared_ptr<zap::NetworkClient> net)
 }
 
 /**
- * private thread-safe declarations
+ * private declarations
  */
 
 static inline u32 _max_tiles = 0;
@@ -213,6 +214,76 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         });
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("ppo", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 4);
+
+        if (params.size() < 4) {
+            return;
+        }
+        if (ai::_player_map.find(params[0]) == ai::_player_map.end()) {
+            return;
+        }
+        f32 angle;
+
+        const std::string &id = params[0];
+        const u32 size_x = static_cast<u32>(_data.map.size());
+        const u32 size_y = static_cast<u32>(_data.map[0].size());
+        const Vector2f base = {std::stof(params[1]), std::stof(params[2])};
+        const Vector3 pos = maths::to_3D(base, {size_x, size_y}, maths::radius(size_x, size_y));
+        const Vector3 r = maths::rotation(pos, &angle, false);
+        // const i8 orientation = static_cast<i8>(std::stoi(params[3]));
+
+        zap::thread::Queue::getInstance().push([id, pos, r, angle]() {
+            ai::_player_map.at(id)->setPosition(pos);
+            ai::_player_map.at(id)->setRotationAxis(r, angle);
+            // ai::_player_map.at(id)->setOrientation(orientation);
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pin", [](const std::string UNUSED &data) -> void {
+        /* __ pin ___ */
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pex", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 1);
+
+        if (params.size() < 1) {
+            return;
+        }
+        const std::string &id = params[0];
+
+        zap::thread::Queue::getInstance().push([id](zap::render::Scene *scene) {
+            if (ai::_player_map.find(id) == ai::_player_map.end()) {
+                return;
+            }
+            scene->remove(ai::_player_map.at(id).get());
+            ai::_player_map.erase(id);
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pbc", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 1);
+
+        if (params.size() < 1) {
+            return;
+        }
+        const std::string &id = params[0];
+
+        zap::logger::recv("Player ", id, " broadcasted a message");
+    });
+
+    callback.add("pic", [](const std::string UNUSED &data) -> void {
+        /* __pic__ */
     });
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
