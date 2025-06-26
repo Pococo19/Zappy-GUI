@@ -63,6 +63,38 @@ Color zap::abstract::ModelBase::getTint() const
     return _tint;
 }
 
+static constexpr i8 NORTH = 0;
+static constexpr i8 EAST = 1;
+static constexpr i8 SOUTH = 2;
+static constexpr i8 WEST = 3;
+
+static constexpr f32 yaw_angles[] = {
+    0.0f,  //<< NORTH
+    90.0f, //<< EAST
+    180.0f,//<< SOUTH
+    270.0f //<< WEST
+};
+
+void zap::abstract::ModelBase::setOrientation(const i8 nsew)
+{
+    switch (nsew) {
+        case NORTH:
+            _rotationAngle = yaw_angles[NORTH];
+            break;
+        case EAST:
+            _rotationAngle = yaw_angles[EAST];
+            break;
+        case SOUTH:
+            _rotationAngle = yaw_angles[SOUTH];
+            break;
+        case WEST:
+            _rotationAngle = yaw_angles[WEST];
+            break;
+        default:
+            break;
+    }
+}
+
 void zap::abstract::ModelBase::setRotationAxis(const Vector3 &axis, const f32 angle)
 {
     _rotationAxis = axis;

@@ -40,6 +40,7 @@ class ModelBase
 
         void setRotationAxis(const Vector3 &axis, const f32 angle);
         void setRotation(const Vector3 &rotation);
+        void setOrientation(const i8 nsew);
         void setShader(const Shader &shader);
 
         Matrix getTransform() const;

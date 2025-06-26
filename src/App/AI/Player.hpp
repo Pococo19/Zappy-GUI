@@ -17,8 +17,13 @@ class Player final : public zap::ZapModelAnim
         explicit Player(const std::string &id);
         ~Player() override = default;
 
+        enum class Animation { NONE, INCANTATION, EGG, DEATH };
+
+        void setAnimation(const Animation &animation);
+
     private:
         std::string _id;
+        Animation _animation = Animation::NONE;
 };
 
 }// namespace zappy::ai
