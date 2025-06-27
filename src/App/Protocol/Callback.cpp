@@ -7,6 +7,7 @@
 
 #include <App/Protocol/Callback.hpp>
 #include <ZapGUI/Logger.hpp>
+#include <iostream>
 
 /**
 * public
@@ -37,6 +38,7 @@ void zappy::protocol::Callback::call(const std::string &cmd, const std::string &
     if (!contains(cmd)) {
         return;
     }
+    std::cout << cmd << " " << std::endl;
     _commands.at(cmd)(data);
 }
 

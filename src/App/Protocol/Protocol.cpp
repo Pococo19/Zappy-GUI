@@ -240,6 +240,7 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         zap::thread::Queue::getInstance().push([id, pos, r, angle]() {
             ai::_player_map.at(id)->setPosition(pos);
             ai::_player_map.at(id)->setRotationAxis(r, angle);
+            ai::_player_map.at(id)->setAnimation(zappy::ai::Player::Animation::INCANTATION);
             // ai::_player_map.at(id)->setOrientation(orientation);
         });
     });
@@ -282,10 +283,157 @@ void zappy::protocol::init(std::shared_ptr<zap::NetworkClient> net)
         zap::logger::recv("Player ", id, " broadcasted a message");
     });
 
-    callback.add("pic", [](const std::string UNUSED &data) -> void {
-        /* __pic__ */
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    
+    callback.add("pic", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 5);
+
+        if (params.size() < 5) {
+            return;
+        }
+        const std::string &id = params[0];
+        
+         zap::thread::Queue::getInstance().push([id]() {
+            ai::_player_map.at(id)->setAnimation(zappy::ai::Player::Animation::DEATH);
+        });
+
     });
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pie", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 3);
+
+        if (params.size() < 3) {
+            return;
+        }
+
+        const u32 x = static_cast<u32>(std::stoi(params[0]));
+        const u32 y = static_cast<u32>(std::stoi(params[1]));
+        const bool success = (params[2] == "1");
+
+        zap::logger::recv("Incantation ended at (", x, ", ", y, ") with result: ", success ? "SUCCESS" : "FAILURE");
+
+        zap::thread::Queue::getInstance().push([x, y, success]() {
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("plv", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 2);
+
+        if (params.size() < 2) {
+            return;
+        }
+
+        const std::string &id = params[0];
+        const u32 level = static_cast<u32>(std::stoi(params[1]));
+
+        if (ai::_player_map.find(id) == ai::_player_map.end()) {
+            return;
+        }
+
+        zap::thread::Queue::getInstance().push([id, level]() {
+            // ai::_player_map.at(id)->setLevel(level);
+            zap::logger::recv("Player ", id, " leveled up to ", level);
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("ebo", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 1);
+
+        if (params.size() < 1) {
+            return;
+        }
+
+        const std::string &egg_id = params[0];
+
+        zap::logger::recv("Egg ", egg_id, " has hatched");
+
+        // zap::thread::Queue::getInstance().push([egg_id]() {
+        //     // zap::render::Egg::remove(egg_id);
+        // });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("edi", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 1);
+
+        if (params.size() < 1) {
+            return;
+        }
+
+        const std::string &egg_id = params[0];
+
+        zap::logger::recv("Egg ", egg_id, " has died");
+
+        // zap::thread::Queue::getInstance().push([egg_id]() {
+        //     // zap::render::Egg::remove(egg_id);
+        // });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pdi", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 1);
+
+        if (params.size() < 1) {
+            return;
+        }
+
+        const std::string &id = params[0];
+
+        zap::logger::recv("Player ", id, " has died");
+
+        zap::thread::Queue::getInstance().push([id](zap::render::Scene *scene) {
+            if (ai::_player_map.find(id) == ai::_player_map.end()) {
+                return;
+            }
+            scene->remove(ai::_player_map.at(id).get());
+            ai::_player_map.erase(id);
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pgt", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 2);
+
+        if (params.size() < 2) {
+            return;
+        }
+
+        const std::string &id = params[0];
+        const u32 resource_id = static_cast<u32>(std::stoi(params[1]));
+
+        zap::logger::recv("Player ", id, " picked up resource #", resource_id);
+
+        // zap::thread::Queue::getInstance().push([id, resource_id]() {
+        // });
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    callback.add("pdr", [](const std::string &data) -> void {
+        const auto params = protocol::parse<std::string>(data, 2);
+
+        if (params.size() < 2) {
+            return;
+        }
+
+        const std::string &id = params[0];
+        const u32 resource_id = static_cast<u32>(std::stoi(params[1]));
+
+        zap::logger::recv("Player ", id, " dropped resource #", resource_id);
+
+        // zap::thread::Queue::getInstance().push([id, resource_id]() {
+        // });
+    });
+    
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

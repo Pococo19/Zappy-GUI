@@ -20,6 +20,31 @@ zappy::ai::Player::Player(const std::string &id) : ZapModelAnim(_obj_path), _id(
     /* __ctor__ */
 }
 
+void zappy::ai::Player::setAnimation(const Animation &animation)
+{
+    if (_animation == animation) {
+        return;
+    }
+    _animation = animation;
+
+    switch (animation) {
+        case Animation::NONE:
+            _anim_index = 0;
+            break;
+        case Animation::INCANTATION:
+            _anim_index = 1;
+            break;
+        case Animation::EGG:
+            break;
+        case Animation::DEATH:
+            _anim_index = 2;
+            break;
+        default:
+            _anim_index = 0;
+            break;
+    }
+}
+
 /**
 * private
 */
